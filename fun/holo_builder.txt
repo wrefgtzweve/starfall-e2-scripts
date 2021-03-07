@@ -1,0 +1,86 @@
+@name holo builder
+@inputs 
+@outputs 
+@persist [Pent,Pmod,Ppos,Pmat,Pang,Pcol,Palp]:array Scan:number Ptot:number Broken:number Chunk:number LoopPos:number
+@trigger 
+
+if(first())
+{
+    LoopPos=0
+    Chunk=50
+    Scan=0
+    Broken=0
+    propSpawnUndo(1)
+    findIncludePlayerProps(owner())
+    findByClass("prop_physics")
+    Pent = findToArray()
+    Ptot = Pent:count()
+    print(Ptot+" Props scanned, processing now")
+    timer("chunk",1)
+}
+
+if(clk("chunk"))
+{
+    print(_HUD_PRINTCENTER,"Scanning: "+floor((LoopPos/Ptot)*100)+"%")
+    for(I=LoopPos,Chunk)
+    {
+        Ppos[I,vector] = Pent[I,entity]:pos()
+        Pang[I,angle] = Pent[I,entity]:angles()
+        Pmod[I,string] = Pent[I,entity]:model()
+        Pmat[I,string] = Pent[I,entity]:getMaterial()
+        Pcol[I,vector] = Pent[I,entity]:getColor()
+        Palp[I,number] = Pent[I,entity]:getAlpha()
+        Pent[I,entity]:propBreak()
+        
+        if(I==Chunk)
+        {
+            LoopPos+=50
+            Chunk+=50
+            timer("chunk",500)
+            break
+        }
+        if(I == Ptot)
+        {
+            print(_HUD_PRINTCENTER,"Scanning: "+100+"%")
+            stoptimer("chunk")
+            timer("spawn",1)
+            LoopPos=0
+            Chunk=50
+            Scan=1
+            print("Processing done, the scanned props are now protected.")
+            break
+        }
+    }
+}
+
+if(clk("spawn"))
+{
+    print(_HUD_PRINTCENTER,"Creating holo's "+floor((LoopPos/Ptot)*100)+"%")
+    for(I=LoopPos,Chunk)
+    {
+        holoCreate(I,Ppos[I,vector],vec(1,1,1),Pang[I,angle])
+        holoParent(I,entity())
+        holoModel(I,Pmod[I,string])
+        holoMaterial(I,Pmat[I,string])
+        holoColor(I,Pcol[I,vector])
+        holoAlpha(I,Palp[I,number])
+        
+        if(I==Chunk)
+        {
+            LoopPos+=50
+            Chunk+=50
+            timer("spawn",500)
+            break
+        }
+        if(I == Ptot)
+        {
+            print(_HUD_PRINTCENTER,"Creating holo's : "+100+"%")
+            stoptimer("spawn")
+            LoopPos=0
+            Chunk=50
+            Scan=1
+            print(_HUD_PRINTCENTER,"Holo copy created.")
+            break
+        }
+    }
+}

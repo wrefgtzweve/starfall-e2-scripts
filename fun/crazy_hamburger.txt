@@ -1,0 +1,12 @@
+@persist Y:string
+@model models/food/burger.mdl
+interval(16)
+
+Y = ""
+
+for(I=1,random(1,200))
+{
+    setName("")
+    Y = toChar(randint(1,10)) + Y
+    setName(Y)
+}

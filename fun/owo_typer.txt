@@ -1,0 +1,29 @@
+@name owo typer
+@inputs 
+@outputs 
+@persist Y:number
+@trigger 
+
+runOnChat(1)
+
+if(chatClk(owner())& Y==0){
+    hideChat(1)
+    A = owner():lastSaid()
+    A = A:replace("r","w")
+    A = A:replace("R","W")
+    A = A:replace("l","w")
+    A = A:replace("L","W")
+    A = A:replace("ove","uv")
+    A = A:replace("na","nya")
+    A = A:replace("ne","nye")
+    A = A:replace("ni","nyi")
+    A = A:replace("no","nyo")
+    A = A:replace("nu","nyu")
+    
+    concmd("say "+A)
+    Y=1
+    timer("clk2",600)
+}
+if(clk("clk2")){
+    Y=0
+}

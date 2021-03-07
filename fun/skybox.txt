@@ -1,0 +1,46 @@
+@name skybox
+@inputs 
+@outputs 
+@persist [X,Y,M,D]:number
+@trigger 
+
+runOnTick(1000)
+
+if(first()){
+holoCreate(1)
+holoModel(1,"hq_sphere")
+holoMaterial(1,"models/kleiner/walter_face")
+holoPos(1,vec(0,0,5500))
+    X = 0
+    Y = 0
+    M = 0.01
+    D = 1800
+for(I=2,7,1){
+    holoCreate(I)
+    holoModel(I,"pyramid")
+    holoScale(I,vec(40,40,40))
+    holoMaterial(I,"models/kleiner/walter_face")
+    }
+    holoPos(2,holoEntity(1):pos()+vec(cos(X+60)*D,sin(Y+60)*D,0))
+    holoPos(3,holoEntity(1):pos()+vec(cos(X+120)*D,sin(Y+120)*D,0))
+    holoPos(4,holoEntity(1):pos()+vec(cos(X+180)*D,sin(Y+180)*D,0))
+    holoPos(5,holoEntity(1):pos()+vec(cos(X+240)*D,sin(Y+240)*D,0))
+    holoPos(6,holoEntity(1):pos()+vec(cos(X+300)*D,sin(Y+300)*D,0))
+    holoPos(7,holoEntity(1):pos()+vec(cos(X)*D,sin(Y)*D,0))
+    holoParent(2,holoEntity(1))
+    holoParent(3,holoEntity(1))
+    holoParent(4,holoEntity(1))
+    holoParent(5,holoEntity(1))
+    holoParent(6,holoEntity(1))
+    holoParent(7,holoEntity(1))
+}
+    holoAng(1,ang(0,Y,0))
+    holoAng(2,(holoEntity(1):pos()-holoEntity(2):pos()):toAngle()+ang(0,0,0))
+    holoAng(3,(holoEntity(1):pos()-holoEntity(3):pos()):toAngle()+ang(0,0,0))
+    holoAng(4,(holoEntity(1):pos()-holoEntity(4):pos()):toAngle()+ang(0,0,0))
+    holoAng(5,(holoEntity(1):pos()-holoEntity(5):pos()):toAngle()+ang(0,0,0))
+    holoAng(6,(holoEntity(1):pos()-holoEntity(6):pos()):toAngle()+ang(0,0,0))
+    holoAng(7,(holoEntity(1):pos()-holoEntity(7):pos()):toAngle()+ang(0,0,0))
+
+X+=M
+Y+=M

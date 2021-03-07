@@ -1,0 +1,72 @@
+@name void room
+@persist Seat:entity Seat2:entity
+
+#Author Redox
+
+interval(100)
+runOnLast(1)
+
+if (first())
+{
+    Seat = seatSpawn("models/props_c17/door01_left.mdl",entity():pos() + vec(0,-25,50),ang(0),1)
+    Seat2 = seatSpawn("models/props_c17/door01_left.mdl",vec(-9090,-4673,-11081),ang(0),1)
+    
+    entity():parentTo(Seat)
+    entity():propShadow(0)
+    entity():setAlpha(0)
+    
+    holoCreate(3)
+    holoPos(3,vec(-9140,-4650,-11105))
+    holoVisible(3,players(),0)
+    
+    holoCreate(4)
+    holoPos(4,entity():pos()+vec(-100,0,50))
+    holoVisible(4,players(),0)
+    holoParent(4,Seat)
+    
+    holoCreate(5,vec(-9090,-4673,-11040),vec(-106,-137,-15.9),ang(0,0,180),vec(230,230,230),"")
+    #holoMaterial(5,"models/pi_window/plaster")
+    holoDisableShading(5,1)
+    
+    holoCreate(10,entity():pos()+vec(0,-28,50),vec(0.5,0.5,10),ang(0,0,0),vec(255,255,255),"")
+    holoCreate(11,entity():pos()+vec(0,24.5,50),vec(0.5,0.5,10),ang(0,0,0),vec(255,255,255),"")
+    holoCreate(12,entity():pos()+vec(0,-2,107),vec(0.5,4,0.5),ang(0,0,0),vec(255,255,255),"")
+    
+    holoCreate(20,Seat2:pos()+vec(0,0,0),vec(0.5,0.5,10),ang(0,0,0),vec(255,255,255),"")
+    holoCreate(21,Seat2:pos()+vec(0,50,0),vec(0.5,0.5,10),ang(0,0,0),vec(255,255,255),"")
+    holoCreate(22,Seat2:pos()+vec(0,25,57),vec(0.5,4,0.5),ang(0,0,0),vec(255,255,255),"")
+    
+    holoMaterial(10,"models/pi_window/plaster")
+    holoMaterial(11,"models/pi_window/plaster")
+    holoMaterial(12,"models/pi_window/plaster")
+    
+    holoMaterial(20,"models/pi_window/plaster")
+    holoMaterial(21,"models/pi_window/plaster")
+    holoMaterial(22,"models/pi_window/plaster")
+    
+    holoParent(10,Seat)
+    holoParent(11,Seat)
+    holoParent(12,Seat)
+    
+#[    lightCreate(1)
+    lightPos(1,Seat:pos()+vec(-50,25,0))
+    lightParent(1,Seat)
+    
+    lightCreate(2)
+    lightPos(2,Seat2:pos()+vec(-50,25,0))
+    lightParent(2,Seat2)]#
+}
+elseif (last())
+{
+    Seat:propDelete()
+    Seat:propDelete()
+}
+
+if (changed(Seat:driver()) & Seat:driver())
+{
+    Seat:ejectPodTo(holoEntity(3):pos())
+}
+if (changed(Seat2:driver()) & Seat2:driver())
+{
+    Seat2:ejectPodTo(holoEntity(4):pos())
+}
