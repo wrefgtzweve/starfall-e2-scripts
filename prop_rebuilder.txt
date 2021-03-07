@@ -1,0 +1,141 @@
+--@name Prop rebuilder
+--@author Redox
+--@shared
+
+if SERVER then
+    
+    local Ppos = {}
+    local Pang = {}
+    local Pmod = {}
+    local Pmat = {}
+    local Pcol = {}
+    
+    local Breakables = {}
+    local Bpos = {}
+    local Bang = {}
+    local Bmod = {}
+    local Bmat = {}
+    local Bcol = {}
+    local Bactiverepair = {}
+    
+    function Scan ()
+        Props = find.byClass("prop_physics",function(a)
+            return a:getOwner() == owner()
+        end)
+        
+        table.sort(Props,function(a,b) return a:getMass() > b:getMass() end)
+        
+        for N,Prop in pairs(Props) do
+            Ppos[N] = Prop:getPos()
+            Pang[N] = Prop:getAngles()
+            Pmod[N] = Prop:getModel()
+            Pmat[N] = Prop:getMaterial()
+            Pcol[N] = Prop:getColor()
+        end
+        print("Scanning finished, "..table.count(Props).." props are now protected.")
+    end
+    
+    function Remove ()
+        local Remove = owner():getEyeTrace()["Entity"]
+        table.removeByValue(Props,Remove)
+        Remove:breakEnt()
+        print("Prop removed from the table.")
+    end
+    
+    function Breaksadd ()
+        local Breakable = owner():getEyeTrace()["Entity"]
+        local Key = table.keyFromValue(Props,Breakable)
+        
+        if isValid(Breakable) == false then
+            print("Please aim at a valid prop.")
+            return
+        end
+        
+        table.insert(Breakables,Breakable)
+        table.insert(Bpos,Ppos[Key])
+        table.insert(Bang,Pang[Key])
+        table.insert(Bmod,Pmod[Key])
+        table.insert(Bmat,Pmat[Key])
+        table.insert(Bcol,Pcol[Key])
+        table.insert(Bactiverepair,0)
+        
+        table.remove(Props,Key)
+        table.remove(Ppos,Key)
+        table.remove(Pang,Key)
+        table.remove(Pmod,Key)
+        table.remove(Pmat,Key)
+        table.remove(Pcol,Key)
+        
+        print("Prop is now breakable with a cooldown.")
+    end
+    
+    function BreaksCheck ()
+        for N,Break in pairs(Breakables) do
+            if isValid(Break) == false and prop.canSpawn() == true then
+                if Bactiverepair[N] == 0 then 
+                    Bactiverepair[N] = 1
+                    timer.create("Timer"..N,5,1,function() RepairBreak(N) end)
+                end
+            elseif isValid(Break) == true and Break:isFrozen() == false and prop.canSpawn() == true then
+                if Bactiverepair[N] == 0 then 
+                    Bactiverepair[N] = 1
+                    Break:breakEnt()
+                    timer.create("Timer"..N,5,1,function() RepairBreak(N) end)
+                end
+            end
+        end
+        timer.simple(1,BreaksCheck)
+    end
+    
+    function RepairBreak(Num)
+        --timer.stop("RepairBreak")
+        if(prop.canSpawn() == true) then
+            local breakAble = prop.create(Bpos[Num],Bang[Num],Bmod[Num],true)
+            if breakAble then return end
+            Breakables[Num] = breakAble                     
+            Breakables[Num]:setMaterial(Bmat[Num])
+            Breakables[Num]:setColor(Bcol[Num])
+        end
+        Bactiverepair[Num] = 0
+    end
+    
+    function Repair ()
+        for N,Prop in pairs(Props) do
+            if isValid(Prop) == false and prop.canSpawn() == true then
+                local propS = prop.create( Ppos[N], Pang[N], Pmod[N], true )
+                if not propS then return end
+                Props[N] = propS
+                Props[N]:setMaterial(Pmat[N])
+                Props[N]:setColor(Pcol[N])
+            elseif isValid(Prop) == true and Prop:isFrozen() == false and prop.canSpawn() == true then
+                Prop:breakEnt()
+                local propS = prop.create( Ppos[N], Pang[N], Pmod[N], true )
+                if not propS then return end
+                propS = Props[N]
+                Props[N]:setMaterial(Pmat[N])
+                Props[N]:setColor(Pcol[N])
+            end
+        end
+        timer.simple(1,Repair)
+    end
+    
+    hook.add("Playersay","said",function(player,text)
+    if text:sub(1,5)=="!scan" then
+            Scan()
+            return ""
+        end
+    if text:sub(1,7)=="!remove" then
+            Remove()
+            return ""
+        end
+    if text:sub(1,6)=="!break" then
+            Breaksadd()
+            return ""
+        end
+    end)
+    
+    Scan() 
+    Repair()
+    BreaksCheck()
+    
+end

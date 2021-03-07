@@ -1,0 +1,73 @@
+--@name yes
+--@author Redox
+--@server
+
+if SERVER then
+    local Prop
+    local PropPhys
+    local on = false
+    
+    hook.add("OnEntityCreated","FirstPropSpawn",function(ent)
+        if ent:getOwner() ~= owner() then return end
+        
+        Prop = ent
+        PropPhys = Prop:getPhysicsObject()
+        Prop:enableDrag( true )
+        
+        print( "Prop selected." )
+        chip():setColor( Color( 0, 0, 0, 0 ) )
+        --chip():setCollisionGroup( 10 )
+        
+        hook.remove("OnEntityCreated","FirstPropSpawn")
+    end)
+    
+    hook.add("PlayerEnteredVehicle","Seat Enter",function(ply)
+        if ply ~= owner() then return end
+        on = true
+        if isValid(Prop) == false then print("Please spawn a prop") return end
+        Prop:enableGravity( false )
+        --Prop:setCollisionGroup( 10 )
+    end)
+    
+    hook.add("PlayerLeaveVehicle","Seat Exit",function(ply)
+        if ply ~= owner() then return end
+        on = false
+        Prop:enableGravity( true )
+        Prop:setCollisionGroup( 0 )
+    end)
+    
+    hook.add("KeyPress","Keypress_hook_m1",function(ply,key)
+        if ply ~= owner() then return end
+        if owner():inVehicle() ~= true then return end
+        if key ~= 1 then return end
+        
+        Prop:applyForceCenter( owner():getAimVector() * Prop:getMass() * 300 )
+        
+        Prop:enableGravity( false )
+        --Prop:setCollisionGroup( 10 )
+    end)
+    
+    hook.add("KeyPress","Keypress_hook_m2",function(ply,key)
+        if ply ~= owner() then return end
+        if owner():inVehicle() ~= true then return end
+        if key ~= 2048 then return end
+        
+        PropPhys:sleep()
+    end)
+    
+    local DAnew = Angle()
+    local DAold = Angle()
+    
+    local DVold = Vector()
+    local DVnew = Vector()
+    
+    hook.add("think","Think_hook",function()
+        if isValid(Prop) == false then return end
+        if on == false then return end
+        DAold = DAnew
+        DAnew = ( -Prop:getAngles() ) * ( Prop:getMass() * 10 )
+        local DeltaA = DAnew - DAold
+        Prop:applyAngForce( DAnew + ( DeltaA * 5 ) )
+    end)
+    
+end

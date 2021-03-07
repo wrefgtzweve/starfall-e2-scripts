@@ -1,0 +1,63 @@
+--@name Viewcam
+--@author Redox
+--@shared
+
+if CLIENT then
+
+    hook.add("net","client",function(name)
+        if name == "send" then
+        
+            Pre = find.playersByName(net.readString(),false,false)[1]
+            
+            if isValid(Pre) == true then
+                Player = Pre
+            end
+        end
+    end)
+    
+    Player = owner()
+    
+    render.createRenderTarget("rt")
+    local mat = material.create("gmodscreenspace")
+    mat:setTextureRenderTarget("$basetexture", "rt")
+    
+    hook.add("renderscene","render",function()
+        if quotaAverage() > quotaMax()*0.6 then 
+            return 
+        end
+        render.selectRenderTarget("rt")
+        render.renderView({
+            origin = Player:getEyePos()+Vector(0,0,20),
+            angles = Player:getEyeAngles(),
+            x = 0,
+            y = 0,
+            w = 1024,--1024
+            h = 1024,
+            drawviewmodel = false,
+            drawhud = true,
+        })
+    end)
+    
+    hook.add("render", "", function()
+    
+        if render.isInRenderView() then
+            render.drawText(256, 256, "Inception", 1)
+            return
+        end
+        
+        render.pushViewMatrix({ type = "3D" })
+            render.setMaterial(mat)
+            render.setColor(Color(255, 255, 255))
+            render.drawTexturedRect(0, 0, 512, 512)
+        render.popViewMatrix()
+    end)
+else
+    hook.add("Playersay","said",function(player,text)
+    if text:sub(1,3)=="!v " then
+        net.start("send")
+        net.writeString(text:sub(4))
+        net.send()
+        return ""
+        end
+    end)
+end

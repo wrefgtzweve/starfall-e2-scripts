@@ -1,0 +1,81 @@
+--@name Missile Silo
+--@author Redox
+--@shared server
+
+local glideHeight = -10000
+
+if SERVER then
+
+    local function missileSpawn ()
+        local missileProp = prop.create( chip():getPos() + Vector(0,0,75), Angle(270,0,0), "models/props_phx/ww2bomb.mdl", false)
+        missileProp:setTrails(25, 0, 3, "effects/beam_generic01", Color(50,50,50))
+        timer.simple( 10, function()
+            if isValid(missileProp) then missileProp:breakEnt() end
+        end)
+        return missileProp
+    end
+    
+    local function antiairMissile (target,bomb)
+    local miss = false
+    local missVec
+    timer.create("missile", 0.1, 0, function()
+            if isValid(bomb) then
+                if target:getPos():getDistance(bomb:getPos()) <= 150 then
+                    bomb:breakEnt()
+                end
+            
+                if target:getPos():getDistance(bomb:getPos()) <= 275 then
+                    timer.simple( 2, function() if isValid(bomb) then bomb:breakEnt() end end)
+                    miss = true
+                end
+                
+                if miss == true then
+                    bomb:applyForceCenter( missVec )
+                    bomb:applyTorque( missVec )
+                    return
+                end
+                
+                local Vec = ( target:getPos() - bomb:getPos() ) * 10000
+                bomb:applyForceCenter( Vec )
+                bomb:applyTorque( Vec )
+                missVec = Vec
+            else
+                timer.remove("missile")
+            end
+        end)
+    end
+    
+    hook.add("Playersay","said",function(player,text)
+        if player == owner() and text:sub(1,3)=="!t " then
+            local players = find.playersByName( text:sub(5), false, false )
+
+            if players[1] == nil then
+                print( "Could not find that player." )
+                return false
+            end
+            
+            local target = players[1]
+            local targetPos = target:getPos()
+
+            -- Anti air direct attack.
+            if targetPos.z > chip():getPos().z + glideHeight then
+                print( "AA missile launched." )
+                
+                local bomb = missileSpawn()
+                
+                bomb:applyForceCenter( ( ( chip():getPos() + Vector(0,0,1000) ) - bomb:getPos() ) * 2000 )
+                
+                timer.simple(1, function()
+                    antiairMissile(target,bomb)
+                end)
+                
+            -- Anti ground glide attack.
+            else
+                print( "AG missile launched." )
+                local bomb = missileSpawn()
+            end
+            
+            return false
+        end
+    end)
+end

@@ -1,0 +1,26 @@
+--@name RIP
+--@author Redox
+--@shared
+
+Stones = {
+        "models/props_c17/gravestone001a.mdl",
+        "models/props_c17/gravestone002a.mdl",
+        "models/props_c17/gravestone003a.mdl",
+        "models/props_c17/gravestone004a.mdl",
+        "models/props_c17/gravestone_coffinpiece001a.mdl",
+        "models/props_c17/gravestone_coffinpiece002a.mdl"
+        }
+Y=0
+
+hook.add("PlayerDeath","",function(ply)
+    Y=Y+1
+    
+    local Prop = prop.create(ply:getPos()+Vector(0,0,30),Angle(0,0,0),Stones[math.random(1,6)],false)
+    Prop:setNocollideAll(true)
+    
+    timer.create(""..Y,10,1,function()
+        if isValid(Prop) then
+            Prop:breakEnt()
+        end
+    end)
+end)

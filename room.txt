@@ -1,0 +1,20 @@
+--@name Room
+--@author Redox
+
+if CLIENT then
+    walls = render.createMaterial("props/acousticceiling002a")
+    floor = render.createMaterial("props/acousticceiling002a")
+    roof = render.createMaterial("props/acousticceiling002a")
+    hook.add("render", "roomrender", function()
+    
+        render.setMaterial(walls)
+        render.draw3DBox(Vector(), Angle(), Vector(0,512,0), Vector(0,0,512))
+        render.draw3DBox(Vector(), Angle(), Vector(512,0,0), Vector(512,512,512))
+        render.draw3DBox(Vector(),Angle(),Vector(0,0,512), Vector(512,512,512))
+        render.setMaterial(floor)
+        render.draw3DBox(Vector(), Angle(), Vector(0,512,0), Vector(512,512,512)) --roof
+        render.setMaterial(roof)
+        render.draw3DBox(Vector(), Angle(), Vector(0,0,0), Vector(512,0,512)) --floor
+        
+    end)
+end

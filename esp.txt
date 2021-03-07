@@ -1,0 +1,73 @@
+--@name ESP
+--@author Redox
+--@shared
+
+if CLIENT then
+    local Players
+
+    if player() == owner() then
+        render.setHUDActive(true)
+    end
+    
+    local scrW, scrH
+    local scrW, scrH = render.getResolution()
+    
+    function Find() 
+        Players = find.allPlayers()
+    end
+    
+    Find()
+    
+    timer.create( "findTimer", 10, 0, function()
+        Find()
+    end)
+    
+    hook.add("PlayerDisconnected","discon",Find )
+    hook.add("PlayerSpawn","firstspawn",Find )
+    
+    hook.add("postdrawopaquerenderables","draw",function()
+        for N,Player in pairs(Players) do
+        
+            if Player:isValid() == false then
+                Find()
+                break
+            end
+        
+            if Player == player() then
+                continue
+            end
+            
+            local TeamColor = team.getColor(Player:getTeam())
+            
+            render.setColor(team.getColor(Player:getTeam()))
+            render.draw3DWireframeBox(Player:getPos(),Player:getAngles(),Player:obbMaxs(),Player:obbMins())
+        end
+    end)
+    
+    hook.add("drawhud","draw",function()
+        for N,Player in pairs(Players) do
+        
+            if Player:isValid() == false then
+                Find()
+                break
+            end
+        
+            if Player == owner() or Player == player() then
+                continue
+            end
+            
+            local Dis = player():obbCenterW():getDistance(Player:getPos())
+            local Cords = Player:getPos():toScreen()
+            local TeamColor = team.getColor(Player:getTeam())
+            
+            render.setColor(TeamColor)
+            
+            render.drawText(Cords["x"]-#Player:getName()*3,Cords["y"]-100000/Dis,Player:getName(), alignment)
+            
+            HealthColor = Color(math.clamp(255 - 255*Player:getHealth()/100,0,255),math.clamp(255*Player:getHealth()/100,0,255),0)
+            render.setColor(HealthColor)
+            
+            render.drawRect(Cords["x"]-10000/Dis,Cords["y"]+1000/Dis,math.clamp(20000*Player:getHealth(),1,20000)/Dis,5000/Dis)
+        end
+    end)
+end

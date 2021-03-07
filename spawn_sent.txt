@@ -1,0 +1,8 @@
+--@name funny
+--@author
+--@server
+
+prop.setPropClean(false)
+local prop = prop.createSent( chip():getPos(), Angle(), "m9k_ammo_c4" )
+chip():remove()
+

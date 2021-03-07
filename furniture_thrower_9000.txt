@@ -1,0 +1,50 @@
+--@name Furniture thrower 9000
+--@author Redox
+--@shared
+
+    Furniture = {
+        "models/props_c17/FurnitureCouch002a.mdl",
+        "models/props_c17/FurnitureDrawer001a.mdl",
+        "models/props_c17/FurnitureCouch001a.mdl",
+        "models/props_c17/FurnitureChair001a.mdl",
+        "models/props_c17/FurnitureDrawer002a.mdl",
+        "models/props_interiors/Furniture_Desk01a.mdl",
+        "models/props_interiors/Furniture_Couch02a.mdl",
+        "models/props_interiors/Furniture_Couch01a.mdl",
+        "models/props_interiors/Furniture_Lamp01a.mdl",
+        "models/props_c17/FurnitureTable001a.mdl",
+        "models/props_interiors/Furniture_Vanity01a.mdl",
+        "models/props_interiors/Furniture_shelf01a.mdl",
+        "models/props_junk/wood_crate002a.mdl",
+        "models/props_junk/wood_crate001a_damaged.mdl",
+        "models/props_c17/FurnitureTable002a.mdl",
+        "models/props_c17/FurnitureTable003a.mdl",
+        "models/props_c17/FurnitureBathtub001a.mdl",
+        "models/props_c17/furnitureStove001a.mdl",
+        "models/props_c17/FurnitureWashingmachine001a.mdl"
+        }
+    
+    function spawn ()
+        if prop.canSpawn() then
+            local Prop = prop.create(owner():getPos()+Vector(0,0,140), owner():getEyeAngles(),Furniture[math.random(1,table.count(Furniture))],false)
+            Prop:setMass(10)
+            Prop:applyForceCenter(owner():getAimVector() * 750000)
+            timer.simple(10,function()
+                if isValid(Prop) then
+                    Prop:breakEnt()
+                end
+            end)
+        end
+    end
+
+    hook.add("KeyPress","",function(ply, key)
+        if ply == owner() and key == 2048     then
+            timer.create("spawn",0.1,0,spawn)
+        end
+    end)
+    
+    hook.add("KeyRelease","",function(ply, key)
+        if ply == owner() and key == 2048     then
+            timer.stop("spawn")
+        end
+    end)

@@ -1,0 +1,117 @@
+--@name random holos lol
+--@author Redox
+--@server
+--@model models/hunter/blocks/cube025x025x025.mdl
+
+if SERVER then
+
+local x = math.floor(chip():getPos().x)
+local y = math.floor(chip():getPos().y)
+local z = math.floor(chip():getPos().z) + 5
+
+--chip():setPos(Vector(x,y,z))
+
+local Pos = chip():getPos()
+local N = 0
+local holoArray = {}
+
+local function encodePos( v )
+  return string.format("%x%x%x", v.x, v.y, v.z)
+end
+
+function holoCheckPos(testArray,testPos)
+    if testArray[encodePos(testPos)] != nil then
+        return false
+    end
+    return true
+end
+
+function holoCreate(Pos,Hsv)
+    local holo = holograms.create( Pos, Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(0.85,0.85,0.85))
+    holo:setColor(Color(Hsv,1,1,1):hsvToRGB())
+    local holoPos = holo:getPos()
+    holoArray[encodePos(holoPos)] = 1
+end
+
+holoCreate(Pos,1)
+
+local Hsv = 0
+local failed = {false,false,false,false}
+
+timer.create("loop", 0.01, 0, function()
+    local N = N + 1
+    local X = math.random(1,4)
+    Hsv = Hsv + 2
+    
+    if holograms.canSpawn() == false then
+        timer.stop("loop")
+        return
+    end
+    
+    if failed[1] == true and failed[2] == true and failed[3] == true and failed[4] == true then
+        failed[1] = false
+        failed[2] = false
+        failed[3] = false
+        failed[4] = false
+        Pos.z = Pos.z + 10
+        Hsv = 0
+    end
+    
+    if X == 1 then
+        local xVec = Vector(10,0,0)
+        local tempPos = Pos + xVec
+        
+        if holoCheckPos(holoArray,tempPos) == false then
+            failed[1] = true
+            return false
+        end
+        
+        failed[1] = false
+        Pos = Pos + xVec
+        holoCreate(Pos,Hsv)
+    end
+    
+    if X == 2 then
+        local xVec = Vector(0,10,0)
+        local tempPos = Pos + xVec
+        
+        if holoCheckPos(holoArray,tempPos) == false then
+            failed[2] = true
+            return false
+        end
+        
+        failed[2] = false
+        Pos = Pos + xVec
+        holoCreate(Pos,Hsv)
+    end
+    
+    if X == 3 then
+        local xVec = Vector(-10,0,0)
+        local tempPos = Pos + xVec
+        
+        if holoCheckPos(holoArray,tempPos) == false then
+            failed[3] = true
+            return false
+        end
+        
+        failed[3] = false
+        Pos = Pos + xVec
+        holoCreate(Pos,Hsv)
+    end
+    
+    if X == 4 then
+        local xVec = Vector(0,-10,0)
+        local tempPos = Pos + xVec
+        
+        if holoCheckPos(holoArray,tempPos) == false then
+            failed[4] = true
+            return false
+        end
+        
+        failed[4] = false
+        Pos = Pos + xVec
+        holoCreate(Pos,Hsv)
+    end
+end)
+
+end

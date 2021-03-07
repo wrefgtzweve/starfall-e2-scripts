@@ -1,0 +1,18 @@
+--@name Why the fuck not
+--@author Redox
+--@server
+
+if SERVER then
+    Y=1
+    function PropDrop()
+        Y=Y+1
+        local X = prop.create(chip():getPos()+Vector(0,0,100),Angle(math.random(0,360),math.random(0,360),math.random(0,360)), "models/props_phx/ball.mdl", false)
+        X:setMass(100)
+        timer.create(""..Y,3,1,function()
+            if isValid(X) then
+                X:breakEnt()
+            end
+        end)
+    end
+    timer.create("Prop_Drop", math.random(0.25,1), 0, PropDrop)
+end

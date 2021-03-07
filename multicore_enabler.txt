@@ -1,0 +1,53 @@
+--@name Multicore enabler
+--@author Redox
+--@shared 
+
+--gmod_mcore_test 1; mat_queue_mode -1; cl_threaded_bone_setup 1
+
+if CLIENT then
+    setupPermissionRequest({"console.command"}, "Please provide permissions for console commands.", true)
+    
+    hook.add("permissionrequest", "permission", function()
+        if hasPermission("console.command") then
+            concmd("gmod_mcore_test 1; mat_queue_mode 2; cl_threaded_bone_setup 1; cl_threaded_client_leaf_system 1; r_threaded_particles 1; r_threaded_renderables 1; r_queued_ropes 1; studio_queue_mode 1")
+        end
+    end)
+    
+    setupPermissionRequest({"convar"}, "Press e to get absolutely nothing or maybe you do? It's quite the mistery.", true)     
+    
+    hook.add("permissionrequest", "permission", function()
+        if clicked == true then return end
+        local var = convar.getInt("sv_allowcslua")
+        net.start("var")
+        net.writeDouble(var)
+        net.send(owner())
+        clicked = true
+    end)
+
+    hook.add("render", "screen", function()
+        renderEnt = render.getScreenEntity()
+        scrW, scrH = render.getResolution()
+        
+        if hasPermission("console.command") then
+        
+            render.setFont("DermaLarge")
+            render.setColor(Color(0,255,0))
+            render.drawText(scrW/2,scrH/2,"Multicore enabled!", 1, 1)
+        else
+            
+            render.setFont("DermaLarge")
+            render.setColor(Color(255,255,255))
+            render.drawText(scrW/2,scrH/2,"Press E to enable multicore!", 1, 1)
+        end
+    end)
+else
+    hook.add("net","holo",function(name,_,ply)
+        if name != "var" then return end
+        print( "Player: " .. ply:getName() .. " clientVar: " .. net.readDouble() )
+        if net.readDouble() ~= 0 then
+            concmd("say @"..ply:getName().." has his lua client side variable modified to "..net.readDouble()..", he's probably cheating.")
+        else
+            concmd("say @"..ply:getName().." is a good boy and his lua client side variable is set to the default: "..net.readDouble()..", he's probably not cheating.")
+        end
+    end)
+end

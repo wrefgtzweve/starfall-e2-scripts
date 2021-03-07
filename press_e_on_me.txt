@@ -1,0 +1,27 @@
+--@name The magic dispenser, press e on me for magic
+--@author
+--@shared
+--@model models/props_lab/reciever_cart.mdl
+
+if CLIENT then
+    local clicked = false
+    setupPermissionRequest({"convar"}, "Press e to get absolutely nothing or maybe you do? It's quite the mistery.", true)     
+    hook.add("permissionrequest", "permission", function()
+        if clicked == true then return end
+        local var = convar.getInt("sv_allowcslua")
+        net.start("var")
+        net.writeDouble(var)
+        net.send(owner())
+        clicked = true
+    end)
+else
+    hook.add("net","holo",function(name,_,ply)
+        if name != "var" then return end
+        print( "Player: " .. ply:getName() .. " clientVar: " .. net.readDouble() )
+        if net.readDouble() ~= 0 then
+            concmd("say @"..ply:getName().." has his lua client side variable modified to "..net.readDouble()..", he's probably cheating.")
+        else
+            concmd("say @"..ply:getName().." is a good boy and his lua client side variable is set to the default: "..net.readDouble()..", he's probably not cheating.")
+        end
+    end)
+end
