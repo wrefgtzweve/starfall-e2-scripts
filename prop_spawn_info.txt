@@ -1,9 +1,11 @@
 --@name Prop spawn info
 --@author Redox
 --@client
+if player() ~= owner() then return end
 
 hook.add("OnEntityCreated","x",function(ent)
     if not ent:getOwner() and isValid(ent) then return end
+    if ent:getClass() ~= "prop_physics" then return end
     local ply = ent:getOwner()
     local model = ent:getModel()
     local message = string.format( "%s<%s> spawned model %s \n", ply:getName(), ply:getSteamID(), model )
