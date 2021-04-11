@@ -1,0 +1,11 @@
+--@name Prop spawn info
+--@author Redox
+--@client
+
+hook.add("OnEntityCreated","x",function(ent)
+    if not ent:getOwner() and isValid(ent) then return end
+    local ply = ent:getOwner()
+    local model = ent:getModel()
+    local message = string.format( "%s<%s> spawned model %s \n", ply:getName(), ply:getSteamID(), model )
+    printMessage(2,message)
+end)
