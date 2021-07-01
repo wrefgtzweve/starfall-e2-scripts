@@ -1,0 +1,27 @@
+--@name self growing trash pile
+--@author Redox
+--@server
+prop.setPropClean(false)
+
+local height = 750
+local spread = 250
+local model = {
+    "models/props_junk/wood_crate002a.mdl",
+    "models/props_junk/wood_crate001a.mdl"
+    }
+
+
+local function spawner()
+    if not prop.canSpawn() then return end
+    local Prop
+    pcall(function()
+        Prop = prop.create( chip():getPos() + Vector(math.random(-spread,spread),math.random(-spread,spread),height ) ,Angle() , model[math.random(1,table.count(model))], false )
+        --Prop:setVelocity(Prop:localToWorld(Vector(100000,math.random(-20,20),math.random(-20,20)))-Prop:getPos())
+        timer.simple(10,function()
+            if not isValid(Prop) then return end
+            Prop:enableMotion(false)
+        end)
+    end)
+end
+
+timer.create( "tick", 0.25, 0, spawner)

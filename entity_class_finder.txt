@@ -1,0 +1,36 @@
+--@name entity class finder
+--@author Redox
+--@client
+
+if player() == owner() then
+    enableHud( owner(), true )
+end
+
+local entities = {}
+
+local scrW, scrH = render.getResolution()
+
+function Find() 
+    entities = {}
+    -- gmod_wire_egp_hud
+    table.add( entities, find.byClass( "gmod_wire_exp*" ) )
+end
+
+timer.create( "findTimer", 2, 0, function()
+    Find()
+end)
+
+Find()
+print( #entities )
+
+hook.add("drawhud","draw",function()
+    for _, chip in pairs( entities ) do
+    
+        if not isValid( chip ) then return end
+        
+        local dis = chip:getPos():getDistanceSqr( chip:getPos() )
+        local cords = chip:getPos():toScreen()
+
+        render.drawText( cords.x, cords.y, "Ent", 1 )
+    end
+end)

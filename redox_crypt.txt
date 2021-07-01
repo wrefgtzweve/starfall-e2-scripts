@@ -1,0 +1,40 @@
+--@name Redox Crypt V1
+--@author Redox
+--@shared
+
+
+if SERVER then
+    local initialMessage = ""
+    local function encrypt(text)
+        out = ("Rcrypt-" .. http.base64Encode(initialMessage))
+        return out
+    end
+    
+    hook.add("Playersay","server",function(player,text,teamChat)
+        if player ~= owner() then return end
+        if teamChat == true then
+            initialMessage = text
+            timer.simple(0.5,function()
+                concmd("say **ENCRYPTED MESSAGE**" )
+            end )
+            return ""
+        else
+            if string.startWith(initialMessage,".") then
+                return encrypt(initialMessage)
+            end
+            return initialMessage
+        end
+    end)
+end
+
+if CLIENT then
+    local function decrypt(text)
+        temp = http.base64Decode(text)
+        return temp
+    end
+    if player() ~= owner() then return end
+    hook.add("PlayerChat","client",function(ply,text)
+        if not string.startWith(text,"Rcrypt") then return end
+        print(ply:getName()..": "..decrypt(string.sub(text,8)))
+    end)
+end

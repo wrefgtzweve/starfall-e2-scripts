@@ -1,0 +1,90 @@
+--@name Seat turret
+--@author Redox
+--@shared
+
+if SERVER then
+    wire.adjustInputs(
+        {"Gunbase","Azimuth","Camera","Seat"},
+        {"entity","entity","entity","entity"}
+    )
+    
+    local gunbase = wire.ports.Gunbase
+    local seat = wire.ports.Seat
+    local azimuth = wire.ports.Azimuth
+    local camera = wire.ports.Camera
+    
+    local function isBroken()
+        gunbase = wire.ports.Gunbase
+        seat = wire.ports.Seat
+        azimuth = wire.ports.Azimuth
+        
+        if not isValid( gunbase ) or not isValid( seat ) or not isValid( azimuth ) then
+            return true
+        end
+        return false
+    end
+    
+    local function mouseAim()
+        if isBroken() then return end
+        
+        local driver = seat:getDriver()
+        if not isValid( driver ) then return end
+    
+        local driver = seat:getDriver()
+        local eyeAng = driver:getEyeAngles()
+        
+        local aziPhy = azimuth:getPhysicsObject()
+        if aziPhy:isAsleep() then
+            azimuth:enableMotion( true )
+            aziPhy:wake()
+        end
+        gunbase:setAngles( eyeAng )
+    end
+    
+    hook.add( "Think", "turretAim", mouseAim )
+    
+    local function cameraOn( ply, seatEnt )
+        if seatEnt ~= seat then return end
+        if not isValid( camera ) then return end
+        
+        net.start( "cameraStatus" )
+        net.writeBool( true )
+        net.writeEntity( camera )
+        net.send( ply )
+    end
+    
+    local function cameraOff( ply, seatEnt )
+        if seatEnt ~= seat then return end
+        if not isValid( camera ) then return end
+        
+        net.start( "cameraStatus" )
+        net.writeBool( false )
+        net.writeEntity( camera )
+        net.send( ply )
+    end
+    
+    hook.add( "PlayerEnteredVehicle", "enterVehicle", cameraOn )
+    hook.add( "PlayerLeaveVehicle", "exitVehicle", cameraOff )
+else
+    local camera = chip()
+
+    local function cameraView()
+        local view = { }
+        view.origin = camera:getPos()
+        view.angles = eyeAngles()
+    
+        return view
+    end
+    
+    local function renderCrosshair()
+        local X, Y = render.getResolution()
+        render.drawRectOutline( X/2 + 20, Y/2 + 20, -40, -40 )
+    end
+
+    net.receive( "cameraStatus", function( _, ply )
+        enableHud( owner(), net.readBool() )
+        camera = net.readEntity()
+    end)
+    hook.add( "calcview", "cameraViewHook", cameraView )
+    hook.add( "drawhud", "renderCrosshair", renderCrosshair )
+end

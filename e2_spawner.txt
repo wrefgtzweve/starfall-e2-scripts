@@ -1,0 +1,31 @@
+--@name e2 spawner
+--@author Redox
+--@server
+
+local Y = 0
+local X = 0
+local tab = {_name = "hambarger", _original = [[@name crazyhamburger
+@persist Y:string
+@model models/food/burger.mdl
+interval(1)
+
+Y = ""
+
+while(perf())
+{
+    Y = toChar(randint(1,200)) + Y
+}
+setName(Y)
+
+]], Model = "models/food/burger.mdl"}
+
+timer.create("initloop", 0.25, 15, function()
+    if X == 3 then
+        X = 0
+        Y = Y + 1
+    end
+    X = X + 1
+    tab._name = string.char(math.random(1,200))
+    ENT = prop.createSent(chip():getPos() + Vector( -14 + X * 7,-7 + Y * 7,10 ), Angle(), "gmod_wire_expression2", true, tab)
+    ENT:setParent(chip())
+end)

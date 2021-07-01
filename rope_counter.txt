@@ -1,0 +1,17 @@
+--@name Rope Counter
+--@author Redox
+--@server
+local players = find.allPlayers()
+local ropeTable = find.byClass("keyframe_rope")
+
+for _, rope in ipairs(ropeTable) do
+    local ply = rope:getOwner()
+    if ply == nil then continue end
+    ply.ropeCount = ply.ropeCount or 0
+    ply.ropeCount = ply.ropeCount + 1
+end
+
+for _, ply in pairs(players) do
+    if not ply.ropeCount or ply.ropeCount == 0 then continue end
+    print( ply:getName() .. ": ".. ply.ropeCount )
+end

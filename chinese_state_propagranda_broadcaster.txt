@@ -1,0 +1,16 @@
+--@name CHINESE STATE PROPAGRANDA BROADCASTER
+--@author Redox
+--@client
+
+local snd
+
+bass.loadURL( "https://cdn.discordapp.com/attachments/544554827905236994/856584634316750858/redsuninsky.mp3","3d noblock noplay", function( x )
+    snd = x
+    snd:setPos( chip():getPos() )
+    snd:setVolume( 50 )
+    snd:play()
+
+    hook.add( "Think", "x", function()
+        snd:setPos( owner():getPos() )
+    end)
+end)

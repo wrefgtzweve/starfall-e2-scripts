@@ -1,0 +1,45 @@
+--@name WAILA (What Am I Looking At)
+--@author Redox
+--@client
+if player() == owner() then
+    enableHud( owner(), true )
+end
+
+local font = render.createFont( "Verdana", 16, 800, true )
+
+hook.add( "drawhud", "draw", function()
+    local _, y = render.getResolution()
+    local eyeTrace = player( ):getEyeTrace()
+    if eyeTrace.HitWorld then return end
+    local ent = eyeTrace.Entity
+    
+    if ent:getOwner() then
+        owner = ent:getOwner( ):getName()
+    else
+        owner = "World"
+    end
+
+    local Angles = ent:getAngles()
+    Angles:round( 2 )
+    local angleText = "Angle: " .. Angles.p .. ", " .. Angles.y .. ", " .. Angles.r
+    local modelText = "Model: " .. ent:getModel()
+    local size
+
+    if render.getTextSize( angleText ) > render.getTextSize( modelText ) then
+        size = render.getTextSize( angleText )
+    else
+        size = render.getTextSize( modelText )
+    end
+
+    render.setColor( Color( 20, 20, 20, 120 ) )
+    render.drawRect( 0, y / 2, size + 15, 125 )
+    render.setColor( Color() )
+    render.setFont( font )
+    render.getTextSize( ent:getModel( ) or ent:getMaterial() )
+    render.drawText( 5, y / 2 + 5, "Owner: " .. owner )
+    render.drawText( 5, y / 2 + 25, "Class: " .. ent:getClass() )
+    render.drawText( 5, y / 2 + 45, "Color: " .. string.fromColor( ent:getColor() ) )
+    render.drawText( 5, y / 2 + 65, "Material: " .. ( ent:getMaterial() and "default" ) )
+    render.drawText( 5, y / 2 + 85, modelText )
+    render.drawText( 5, y / 2 + 105, angleText )
+end)

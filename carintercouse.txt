@@ -13,24 +13,17 @@ if SERVER then
 
     function spawn ()
         if prop.canSpawn() and owner():isAlive() then
-            local Prop = prop.create(owner():getPos()+Vector(0,0,200), owner():getEyeAngles(),Cars[math.random(1,table.count(Cars))],false)
-            Prop:setMass(10000)
-            Prop:applyForceCenter(owner():getAimVector() * 100000000)
-            
-            if sounds.canCreate() == true then
-                local Sound = sounds.create(Prop,"ambient/alarms/train_horn2.wav")
-                Sound:play()
-                Sound:setSoundLevel(120)
-            end
-            
-            timer.simple(10,function()
-                if isValid(Prop) then
-                    Prop:breakEnt()
-                    
-                    if isValid( Sound ) then
-                        Sound:destroy()
+            pcall(function()
+                local Prop = prop.create(owner():getPos()+Vector(0,0,200), owner():getEyeAngles(),Cars[math.random(1,table.count(Cars))],false)
+                Prop:setMass(10000)
+                Prop:applyForceCenter(owner():getAimVector() * 100000000)
+                Prop:emitSound("ambient/machines/usetoilet_flush1.wav",100,math.random(50,150))
+                Prop:setCollisionGroup( 9 )
+                timer.simple(10,function()
+                    if isValid(Prop) then
+                        Prop:breakEnt()
                     end
-                end
+                end)
             end)
         end
     end

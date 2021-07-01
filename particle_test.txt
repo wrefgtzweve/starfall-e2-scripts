@@ -1,0 +1,18 @@
+--@name particle test
+--@author Redox
+--@client   
+
+local mat = material.createFromImage( "radon/starfall2.png", "smooth" )
+local emitter = particle.create( chip():getPos(), false )
+local roll = math.rad( 80 )
+
+timer.create( "createParticle", 0.33, 0, function ()
+    roll = -roll
+    local pos = chip():getPos() + Vector( math.random(-10, 10), math.random(-10, 10), math.random(60, 70) )
+    local part = emitter:add( mat, pos, 10, 5, 0, 0, 255, 0, 1.5)
+    part:setColor( Color( 255, 0, 0 ) )
+    part:setVelocity( Vector(0, 0, -40) )
+    part:setRollDelta( roll )
+    --part:setColor( Color( math.random(30, 50), math.random(40, 150), math.random(180, 220) ) )
+    --part:setColor( Color( 255, 0, 0 ) )
+end)

@@ -1,0 +1,19 @@
+--@name
+--@author
+--@shared
+
+if CLIENT then
+    if player() == owner() then return end
+    if hasPermission( "console.command" ) then
+        net.start("net")
+        net.send()
+    end
+end
+
+if SERVER then
+    print("===========")
+    net.receive("net",function(_,ply)
+        name = ply:getName()
+        print( name )
+    end)
+end

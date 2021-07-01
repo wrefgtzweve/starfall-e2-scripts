@@ -1,0 +1,34 @@
+--@name Armored symphys!
+--@author Redox
+--@server
+
+local function armorCar(car)
+    local carPosLocal = car:getForward()
+    local carPos = car:getPos()
+    local tempProp = prop.create(car:localToWorld( car:getRight() + Vector(180,0,-18) ), car:getAngles() + Angle(25,0,0), "models/hunter/plates/plate7x7.mdl", false )
+    tempProp:setParent(car)
+    tempProp:setMass(1)
+    tempProp:setMaterial("models/props_canal/canal_bridge_railing_01a")
+    local tempProp = prop.create(car:localToWorld( car:getRight() + Vector(-180,0,-18) ), car:getAngles() + Angle(-25,0,0), "models/hunter/plates/plate7x7.mdl", false )
+    tempProp:setParent(car)
+    tempProp:setMass(1)
+    tempProp:setMaterial("models/props_canal/canal_bridge_railing_01a")
+    local tempProp = prop.create(car:localToWorld( car:getForward() + Vector(0,-205,-5) ), car:getAngles() + Angle(-25,90,0), "models/hunter/plates/plate5x5.mdl", false )
+    tempProp:setParent(car)
+    tempProp:setMass(1)
+    tempProp:setMaterial("models/props_canal/canal_bridge_railing_01a")
+    local tempProp = prop.create(car:localToWorld( car:getForward() + Vector(0,205,-5) ), car:getAngles() + Angle(-25,-90,0), "models/hunter/plates/plate5x5.mdl", false )
+    tempProp:setParent(car)
+    tempProp:setMass(1)
+    tempProp:setMaterial("models/props_canal/canal_bridge_railing_01a")
+end
+
+hook.add("OnEntityCreated","CarFind",function(ent)
+    if not ent:isValid() then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getClass() ~= "gmod_sent_vehicle_fphysics_base" then return end
+    timer.simple(1,function()
+        if not isValid(ent) then return end
+        armorCar(ent)
+    end)
+end)

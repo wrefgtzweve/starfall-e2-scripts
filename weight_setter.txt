@@ -1,0 +1,16 @@
+--@name Weight setter
+--@author Redox
+--@server
+
+local weight = 25000
+
+local props = find.all( function(a)
+    if a:getClass() == "phys_constraint" then return false end
+    if a:getClass() == "phys_lengthconstraint" then return false end
+    if a:getClass() == "keyframe_rope" then return false end
+    return a:getOwner() == owner()
+end)
+
+for _, prp in ipairs( props ) do
+    prp:setMass( weight )
+end

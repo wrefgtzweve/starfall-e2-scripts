@@ -1,0 +1,46 @@
+--@name missile particles
+--@author Redox
+--@client   
+
+local materials = {
+	"particle/smokesprites_0001",
+	"particle/smokesprites_0002",
+	"particle/smokesprites_0003",
+	"particle/smokesprites_0004",
+	"particle/smokesprites_0005",
+	"particle/smokesprites_0006",
+	"particle/smokesprites_0007",
+	"particle/smokesprites_0008",
+	"particle/smokesprites_0009",
+	"particle/smokesprites_0010",
+	"particle/smokesprites_0011",
+	"particle/smokesprites_0012",
+	"particle/smokesprites_0013",
+	"particle/smokesprites_0014",
+	"particle/smokesprites_0015",
+	"particle/smokesprites_0016"
+}
+
+local ent = chip()
+
+local mat = material.load( "particle/smokesprites_0011", "smooth" )
+local emitter = particle.create( ent:getPos(), false )
+local roll = 1
+
+timer.create( "createParticle", 0.01, 0, function ()
+    roll = -roll
+    local pos = ent:getPos()
+
+    --local flame = emitter:add( material.load( "particles/flamelet"..math.random(1,5), "smooth" ), pos, 4, 0, 0, 0, 255, 0, 0.1 )
+    if emitter:getNumActiveParticles() > 90 then return end
+
+    local smoke = emitter:add( material.load( materials[math.random(1,#materials)], "smooth" ), pos, math.rand(6,12), math.rand(40,90), 0, 0, 150, 0, math.rand(2,3) )
+    smoke:setColor( Color( 50, 50, 50 ) )
+    smoke:setCollide( false )
+    smoke:setAirResistance( 600 )
+    smoke:setVelocity( ent:getForward() * 500  )
+    --part:setVelocity( Vector(0, 0, -40) )
+    --part:setRollDelta( roll )
+    --part:setColor( Color( math.random(30, 50), math.random(40, 150), math.random(180, 220) ) )
+    --part:setColor( Color( 255, 0, 0 ) )
+end)

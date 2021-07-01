@@ -1,0 +1,49 @@
+--@name Model scraper
+--@author Redox
+--@client
+
+if owner() ~= player() then return end
+
+local bestModelPath = "start"
+local bestModelScore = 1
+local models = {}
+local foldersToCheck = { "models" }
+
+local function checkFolder( path )
+    local files, folders = file.findInGame( path .. "/*" )
+
+    for _, fil in ipairs( files ) do
+        if quotaAverage() > quotaMax()*0.90 then return end
+        if string.sub( fil, -4 ) == ".mdl" then
+            local meshy = mesh.getModelMeshes( path .. "/" .. fil )
+            if #meshy ~= 0 then
+                local trian = #meshy[1].triangles
+                if trian > bestModelScore then
+                    print( trian, fil )
+                    bestModelScore = trian
+                    bestModelPath = ( path .. "/" .. fil )
+                end
+            end
+            --table.insert( models, fil )
+        end
+    end
+
+    for _, folder in ipairs( folders ) do
+        table.insert( foldersToCheck, path .. "/" .. folder )
+    end
+    table.removeByValue( foldersToCheck, path )
+end
+
+local function runCheck()
+    local folder = foldersToCheck[1]
+    
+    if not folder then
+        timer.remove( "checkTimer" )
+        print( bestModelPath .. " : " .. bestModelScore )
+        return
+    end
+    
+    checkFolder( folder )
+end
+
+timer.create( "checkTimer", 0.1, 0, runCheck )

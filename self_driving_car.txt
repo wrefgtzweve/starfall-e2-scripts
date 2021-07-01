@@ -2,76 +2,81 @@
 --@author Redox
 --@server
 
-if SERVER then
-    local Car = chip():isWeldedTo()
-    local Wirelink = Car:getWirelink()
-    local Target = owner()
-    local Locked = true
-    
-    --printTable(Wirelink:inputs())
-    
-    Wirelink["Lock"] = 1
-    Wirelink["Engine Start"] = 1
-    
-    hook.add("think","runloop",function()
-        if isValid(Target) == false then return end
+local Target
+local shouldBreak
+local Cars = {}
+
+local function closestPlayer(ent)
+    local from = ent:getPos()
+    local closest
+    local limit = 1e8
+    for k, v in pairs(find.allPlayers()) do
+        local distance = from:getDistanceSqr(v:getPos())
+        if distance < limit and pvp.playerIsInPvp(v) and v:isAlive() and v:getColor().a ~= 175 --[[and v ~= owner()]] then
+            closest = v
+            limit = distance
+        end
+    end
+    return closest
+end
+
+local function linkCar(ent)
+    Cars[ent] = {}
+    Cars[ent].wirelink = ent:getWirelink()
+    Cars[ent].wirelink["Lock"] = 1
+    Cars[ent].wirelink["Engine Start"] = 1
+end
+
+hook.add("think","runloop",function()
+    for Car in pairs(Cars) do
+        if not isValid(Car) then
+            Cars[Car] = nil
+            return
+        end
+        
+        local Target = Cars[Car].Target
+        local Wirelink = Cars[Car].wirelink
+
+        if isValid(Target) == false then Wirelink["Throttle"] = 0 return end
+        
         local pos = worldToLocal(Target:getPos(),Angle(0,0,0),Car:getPos(),Car:getAngles())
         local Rad = (180/3.14)*-math.atan2(pos.y, pos.x)
-        local Distance = Target:getPos():getDistance( Car:getPos() )
-        
---[[
-        if Distance <= 200 then
-            Wirelink["Handbrake"] = 1
-            return
-        else
-            Wirelink["Handbrake"] = 0
+        local Distance = Target:getPos():getDistanceSqr( Car:getPos() )
+
+        if Distance < 10000 then
+            Car:emitSound("hahayoufool.wav", 75, 100)
         end
-]]
+        if Distance < 40000 and Target:inVehicle() then
+            Car:applyDamage(10000)
+        end
         
         if Rad > -90 and Rad < 90 then
             -- forward
             Wirelink["Steer"] = ( 1 / 30 ) * Rad
-            Wirelink["Throttle"] = ( Distance / 500 ) - 0.1
+            Wirelink["Throttle"] = ( 1 --[[Distance / 100]] ) - 0.1
             Wirelink["Brake/Reverse"] = 0
         else
             -- backwards
             Wirelink["Steer"] = -( 1 / 30 ) * Rad
-            Wirelink["Brake/Reverse"] = ( Distance / 500 ) - 0.1
+            Wirelink["Brake/Reverse"] = ( 1 --[[Distance / 100]] ) - 0.1
             Wirelink["Throttle"] = 0
         end
+    end
+end)
+
+hook.add("OnEntityCreated","CarFind",function(ent)
+    if not ent:isValid() then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getClass() ~= "gmod_sent_vehicle_fphysics_base" then return end
+    timer.simple(1,function()
+        linkCar(ent)
     end)
-    
-    hook.add("Playersay","said",function(player,text)
-        if text:sub(1,5) == "!lock" then
-            if Locked == false then
-                Locked = true
-                Wirelink["Lock"] = 1
-            else
-                Locked = false
-                Wirelink["Lock"] = 0
-            end
-            return true
+end)
+
+timer.create("playercheck", 1, 0,function()
+    for Car in pairs(Cars) do
+        if #pvp.getPvpers() ~= 0 then
+            Cars[Car].Target = closestPlayer(Car)
         end
-        
-        if text:sub(1,3) == "!t " then
-            local preTarget = find.playersByName( text:sub(4), false ,false )[1]
-            Wirelink["Engine Start"] = 1
-            
-            if preTarget:isPlayer() == true then
-                Target = preTarget
-                print( "Following player: " .. Target:getName() )
-            else
-                print( "Could not find that player" )
-            end
-            
-            return true
-        end
-    end)
-    
---[[
-    timer.create( "findTimer", 1, 0, function()
-        local players = find.allPlayers()
-        Target = find.sortByClosest( players, Car:getPos() )[1]
-    end)
-]]
-end
+    end
+end)

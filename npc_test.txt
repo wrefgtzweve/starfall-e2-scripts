@@ -1,0 +1,14 @@
+--@name npc test
+--@author Redox
+--@server
+
+local npcs = find.byClass("npc*",function( a )
+    return a:getOwner() == owner()
+end)
+
+local npc = npcs[1]
+npc:addEntityRelationship( npc, "neutral", 10 )
+
+hook.add("think","test", function()
+    npc:goRun( owner():getPos() )
+end)

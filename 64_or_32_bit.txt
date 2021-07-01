@@ -1,0 +1,21 @@
+--@name 64 or 32 bit
+--@author Redox
+--@shared
+
+if CLIENT then
+local function branch()
+    local tbl = {}
+    local tblAddress = string.sub( tostring( tbl ), 10 )
+
+    return string.len( tblAddress ) > 8 and "64bit" or "32bit"
+end
+
+net.start("test")
+net.writeString(branch())
+net.send()
+
+else
+    net.receive("test",function( _, ply )
+        print(net.readString(), ply:getName() )
+    end)
+end

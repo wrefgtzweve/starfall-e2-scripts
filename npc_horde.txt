@@ -1,0 +1,22 @@
+--@name Npc horde
+--@author Redox
+--@model models/Gibs/HGIBS.mdl
+--@server
+
+local function spawnNpcs( pos, class, amount, radius )
+    pos = pos + Vector( 0, 0, 10 )
+    amount = amount / 4
+    timer.create( "spawnNpcs", 1, amount, function()
+        for x = 1, amount do
+            local radiusPos = Vector( pos.x  + math.random( -radius, radius ), pos.y + math.random( -radius, radius ), pos.z + math.random( -radius, radius ) )
+            prop.createSent( radiusPos, Angle(), class, false )
+        end
+    end)
+end
+--npc_fastzombie
+hook.add("Playersay","said",function( ply, text )
+    if text:sub( 1, 7 ) == "/spawn " and ply == owner() then
+        spawnNpcs( owner():getEyeTrace().HitPos, "npc_fastzombie", tonumber(text:sub( 7 )), 100 )
+        return ""
+    end
+end)

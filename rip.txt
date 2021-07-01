@@ -2,25 +2,32 @@
 --@author Redox
 --@shared
 
-Stones = {
-        "models/props_c17/gravestone001a.mdl",
-        "models/props_c17/gravestone002a.mdl",
-        "models/props_c17/gravestone003a.mdl",
-        "models/props_c17/gravestone004a.mdl",
-        "models/props_c17/gravestone_coffinpiece001a.mdl",
-        "models/props_c17/gravestone_coffinpiece002a.mdl"
-        }
-Y=0
-
+local Stones = {
+    "models/props_c17/gravestone001a.mdl",
+    "models/props_c17/gravestone002a.mdl",
+    "models/props_c17/gravestone003a.mdl",
+    "models/props_c17/gravestone004a.mdl",
+    "models/props_c17/gravestone_coffinpiece001a.mdl",
+    "models/props_c17/gravestone_coffinpiece002a.mdl"
+}
+local Sounds = {
+    "death_bell.wav",
+    "ambient/machines/usetoilet_flush1.wav",
+    "stillstanding.wav",
+    "we_suck_again.wav",
+    "wilhelm.wav",
+    "hahayoufool.wav"
+}
 hook.add("PlayerDeath","",function(ply)
-    Y=Y+1
-    
-    local Prop = prop.create(ply:getPos()+Vector(0,0,30),Angle(0,0,0),Stones[math.random(1,6)],false)
-    Prop:setNocollideAll(true)
-    
-    timer.create(""..Y,10,1,function()
-        if isValid(Prop) then
-            Prop:breakEnt()
-        end
+    pcall(function()
+        local Prop = prop.create(ply:getPos()+Vector(0,0,30),Angle(0,0,0),Stones[math.random(1,#Stones)],false)
+        Prop:setNocollideAll(true)
+        Prop:emitSound(Sounds[math.random(1,#Sounds)],100)
+        
+        timer.simple(5,function()
+            if isValid(Prop) then
+                Prop:breakEnt()
+            end
+        end)
     end)
 end)

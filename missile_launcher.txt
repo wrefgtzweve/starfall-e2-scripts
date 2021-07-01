@@ -1,0 +1,106 @@
+--@name Missile Launcher
+--@author Redox
+--@server
+
+local cooldown = 1
+local speed = 5000--5000
+local turnrate = 60--60
+
+local missiles = {}
+local started = false
+local nextFire = 0
+
+wire.adjustInputs({"Target"},{"entity"})
+
+local function spawnMissile( target )
+    if not isValid( target ) then return end
+    if not prop.canSpawn() then return end
+
+    local missileEnt = prop.create( chip():getPos() + chip():getForward() * 110, chip():getAngles(), "models/props_phx/ww2bomb.mdl", false )
+    missileEnt.target = target
+    missileEnt:addCollisionListener( function( data )
+        pcall(function()
+            if not isValid( missileEnt ) then return end
+            missileEnt:breakEnt()
+            local effectdata = effect.create()
+            effectdata:setOrigin( data.HitPos )
+            effectdata:play( "lfs_missile_explosion" )
+        end)
+    end)
+    missileEnt:setTrails( 50, 0, 3, "trails/smoke", Color( 94, 94, 94, 250 ) )
+    table.insert( missiles, missileEnt )
+end
+
+local function guidance( missile )
+    local followent = missile.target
+    local TargetPos = followent:localToWorld(followent:obbCenter())
+
+    TargetPos = followent:localToWorld(followent:obbCenter())
+
+    local pos = TargetPos + followent:getVelocity() * 0.25
+    local pObj = missile:getPhysicsObject()
+
+    if not isValid(pObj) then return end
+
+    local targetdir = (pos - missile:getPos()):getNormalized()
+    local AF = missile:worldToLocalAngles(targetdir:getAngle())
+    AF.p = math.clamp(AF.p * 400, -turnrate, turnrate)
+    AF.y = math.clamp(AF.y * 400, -turnrate, turnrate)
+    AF.r = math.clamp(AF.r * 400, -turnrate, turnrate)
+    local AVel = pObj:getAngleVelocity()
+    pObj:addAngleVelocity(Vector(AF.r, AF.p, AF.y) - AVel)
+    pObj:setVelocity(missile:getForward() * speed)
+end
+
+local function findAirialPlayers()
+    local players = pvp.getPvpers() --find.allPlayers()
+    local targets = {}
+
+    for _, ply in ipairs( players ) do
+        --if not ply:isAlive() then continue end
+
+        local plypos = ply:getPos()
+
+        local htrace = trace.trace( plypos, plypos - Vector( 0, 0, 800 ), nil, nil, 20,false  )
+        if not htrace.Hit  then
+            local vtrace = trace.trace( plypos, chip():getPos(), nil, nil, 20, false )
+            if vtrace.Hit then
+                table.insert( targets, ply )
+            end
+        end
+    end
+    return targets
+end
+
+local function closestPlayer( players )
+    local from = chip():getPos()
+    local closest
+    local limit = 1e24
+    for _, v in pairs( players ) do
+        local distance = from:getDistanceSqr( v:getPos() )
+        if distance < limit then
+            closest = v
+            limit = distance
+        end
+    end
+    return closest
+end
+
+local function attackArials()
+    local arials = findAirialPlayers()
+    local target = closestPlayer( arials )
+
+    if not target then return end
+    spawnMissile( target )
+end
+
+timer.create( "findandfire", 1, 0, attackArials )
+
+hook.add( "Think", "x", function()
+    for _, missile in pairs( missiles ) do
+        if not isValid( missile ) or not isValid( missile.target ) then
+            continue
+        end
+        guidance( missile )
+    end
+end)

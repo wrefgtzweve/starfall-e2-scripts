@@ -1,0 +1,94 @@
+--@name E2 SF Lister
+--@author Redox
+--@shared
+
+if SERVER then
+    local function getQuota(ent)
+        local quota
+        pcall(function()
+            quota = ent:getQuotaAverage()
+        end)
+        quota = math.round( ( quota or 0 ) * 1000000 )
+        return quota
+    end
+    
+    timer.create("chipScan",1,0,function()
+        local e2ChipsTemp = find.byClass( "gmod_wire_expression2" )
+        local sfChipsTemp = find.byClass( "starfall_processor" )
+        
+        local e2ChipsTable = {}
+        local sfChipsTable = {}
+        
+        for _, chip in ipairs(e2ChipsTemp) do
+            local chipName = chip:getChipName()
+            if chipName then
+                local chipUsage = getQuota(chip)
+                e2ChipsTable[ chipName ] = {}
+                e2ChipsTable[ chipName ].owner = chip:getOwner()
+                e2ChipsTable[ chipName ].cpuUsage = chipUsage
+            end
+        end
+        
+        for _, chip in ipairs(sfChipsTemp) do
+            local chipName = chip:getChipName()
+            if chipName then
+                local chipUsage = getQuota(chip) --math.round(chip:getQuotaAverage()*1000000)
+                sfChipsTable[ chipName ] = {}
+                sfChipsTable[ chipName ].owner = chip:getOwner()
+                sfChipsTable[ chipName ].cpuUsage = chipUsage
+            end
+        end
+        
+        net.start("chipResult")
+        net.writeTable(e2ChipsTable)
+        net.writeTable(sfChipsTable)
+        net.send()
+    end)
+
+elseif CLIENT then
+    --if player() ~= owner() then return end
+    
+    local textFont = render.createFont("DermaLarge",13,nil,false)
+    local distance = 13
+    
+    local e2ChipsTable = {init={owner = owner(), chipName = "init", cpuUsage = 70}}
+    local sfChipsTable = {init={owner = owner(), chipName = "init", cpuUsage = 70}}
+
+    net.receive("chipResult", function()
+        e2ChipsTable = net.readTable()
+        sfChipsTable = net.readTable()
+    end)
+    
+    hook.add("render", "imagerender", function()
+        render.setFont( textFont )
+        local X = 0
+        local totalCPU = 0
+        
+        render.drawSimpleText( 0, X, "E2:", 3 )
+        render.drawSimpleText( 206, X, "Owner:", 3 )
+        render.drawSimpleText( 400, X, "Cpu:", 3 )
+        X = X + distance
+        
+        for chipName, chipTab in pairs(e2ChipsTable) do
+            render.drawSimpleText( 0, X, chipName, 3 )
+            render.drawSimpleText( 206, X, chipTab.owner:getName(), 3 )
+            render.drawSimpleText( 400, X, tostring(chipTab.cpuUsage), 3 )
+            X = X + distance
+            totalCPU = totalCPU + chipTab.cpuUsage
+        end
+        X = X + 5
+        render.drawSimpleText( 0, X, "SF:", 3 )
+        X = X + distance
+        
+        for chipName, chipTab in pairs(sfChipsTable) do
+            render.drawSimpleText( 0, X, chipName, 3 )
+            render.drawSimpleText( 206, X, chipTab.owner:getName(), 3 )
+            render.drawSimpleText( 400, X, tostring(chipTab.cpuUsage), 3 )
+            X = X + distance
+            totalCPU = totalCPU + chipTab.cpuUsage
+        end
+        X = X + 5
+        render.drawSimpleText( 0, X, "Count: " .. tostring(table.count(e2ChipsTable) + table.count(sfChipsTable)), 3 )
+        render.drawSimpleText( 400, X, tostring(totalCPU), 3 )
+    end )
+end

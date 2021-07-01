@@ -1,0 +1,74 @@
+--@name holocolcheck
+--@author Redox
+--@shared
+
+if SERVER then
+
+    local canAng = true
+    local speed = 1
+    
+    local holo = holograms.create(chip():getPos()+Vector(0,0,30), Angle(0,-90,0), "models/holograms/cube.mdl", Vector(1,1,1))
+    local holo = prop.create( chip():getPos()+Vector(0,0,30), Angle(0,-90,0), "models/holograms/cube.mdl", true )
+    
+    net.start("holorsend")
+    net.writeEntity(holo)
+    net.send()
+    
+    local function collisionCheck(holo)
+        local holoPos = holo:getPos()
+        local holoForward = holo:getForward()
+        --local hullTrace = trace.trace( holoPos, holoForward * 200)
+        local hullTrace = trace.traceHull( holoPos, holoPos + holoForward * speed , holo:obbMins(), holo:obbMaxs(), holo, nil, nil, false)
+        if hullTrace.Hit == true and canAng then
+            holo:setAngles(holo:getAngles()+Angle(0,90,0))
+        end
+        holo:setPos( holoPos + holoForward * speed )
+    end
+    
+    hook.add("Think", "moveHologramForward", function()
+        collisionCheck(holo)
+    end)
+
+else -- END SERVER
+    if player() ~= owner() then return end
+    local viewEnt
+    
+    net.receive("holorsend", function()
+        viewEnt = net.readEntity()
+    end)
+    
+    render.createRenderTarget("rt")
+    local mat = material.create("gmodscreenspace")
+    mat:setTextureRenderTarget("$basetexture", "rt")
+    
+    hook.add("renderscene","render",function()
+        if quotaAverage() > quotaMax()*0.6 then 
+            return 
+        end
+        render.selectRenderTarget("rt")
+        render.renderView({
+            origin = viewEnt:getPos(),
+            angles = viewEnt:getAngles(),
+            x = 0,
+            y = 0,
+            w = 1024,--1024
+            h = 1024,
+            drawviewmodel = false,
+            drawhud = true,
+        })
+    end)
+    
+    hook.add("render", "fdhawgefhaw", function()
+    
+        if render.isInRenderView() then
+            render.drawText(256, 256, "Inception", 1)
+            return
+        end
+        
+        render.pushViewMatrix({ type = "3D" })
+            render.setMaterial(mat)
+            render.setColor(Color(255, 255, 255))
+            render.drawTexturedRect(0, 0, 512, 512)
+        render.popViewMatrix()
+    end)
+end

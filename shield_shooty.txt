@@ -1,0 +1,18 @@
+--@name Shield shooty
+--@author Redox
+--@server
+
+hook.add("EntityFireBullets","Trol",function( ply )
+    if not prop.canSpawn() then return end
+    if ply ~= owner() then return end
+    if not owner():keyDown(32) then return end
+    local  pos = ply:getShootPos() + ( ply:getEyeAngles():getForward() * 100)
+    pcall(function()
+        local Prop = prop.create( pos, ply:getEyeAngles() + Angle(0,0,90), "models/props_building_details/Storefront_Template001a_Bars.mdl", true )
+        Prop:setMaterial("models/debug/debugwhite")
+        timer.simple(120,function()
+            if not isValid(Prop) then return end
+            Prop:breakEnt()
+        end)
+    end)
+end)

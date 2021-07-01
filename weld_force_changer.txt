@@ -1,0 +1,26 @@
+--@name Weld force changer
+--@author Redox
+--@server
+
+local weld_strength = 0
+
+local usedprop = {}
+
+constraint.setConstraintClean(false)
+
+local startAmount = constraint.constraintsLeft()
+
+local Props = find.byClass( "prop_physics", function(a)
+    return a:getOwner() == owner()
+end)
+
+for _, Prop in ipairs(Props) do
+    local weldTable = Prop:getAllConstrained({Weld=true})
+    constraint.breakType( Prop, "Weld" )
+    for _, constrProp in ipairs( weldTable ) do
+        if Prop == constrProp then return end
+        constraint.weld( Prop, constrProp, 0, 0, weld_strength, false)
+    end
+    break
+end
+print( "Welds created: " .. startAmount - constraint.constraintsLeft() )

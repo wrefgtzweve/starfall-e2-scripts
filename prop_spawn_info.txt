@@ -1,13 +1,25 @@
 --@name Prop spawn info
 --@author Redox
---@client
+--@shared
 if player() ~= owner() then return end
 
-hook.add("OnEntityCreated","x",function(ent)
-    if not ent:getOwner() and isValid(ent) then return end
-    if ent:getClass() ~= "prop_physics" then return end
-    local ply = ent:getOwner()
-    local model = ent:getModel()
-    local message = string.format( "%s<%s> spawned model %s \n", ply:getName(), ply:getSteamID(), model )
-    printMessage(2,message)
-end)
+if SERVER then
+    hook.add("OnEntityCreated","x",function(ent)
+        if not isValid(ent) then return end
+        if not ent:getOwner() then return end
+        if ent:getClass() ~= "prop_physics" then return end
+        local ply = ent:getOwner()
+        local model = ent:getModel()
+        local message = string.format( "%s<%s> spawned model %s \n", ply:getName(), ply:getSteamID(), model )
+        
+        net.start( "send_info" )
+        net.writeString( message )
+        net.send( owner() )
+    end)
+end
+
+if CLIENT then
+    net.receive( "send_info", function()
+        printMessage( 2, net.readString() )
+    end)
+end

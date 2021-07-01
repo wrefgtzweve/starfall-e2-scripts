@@ -1,0 +1,24 @@
+--@name Spectate
+--@author Redox
+--@client
+
+if player() ~= owner() then return end
+enableHud( owner( ), true )
+
+local isSpectating
+local specPlayer
+
+specPlayer = find.playersByName("cyril",false,false)[1]
+specPlayer:setNoDraw(true)
+local function specCalcView()
+    if not isValid(specPlayer) then return end
+    
+    --specPlayer:setNoDraw(not isSpectating)
+    local view = {}
+    view.angles = specPlayer:getEyeAngles()
+    view.origin = specPlayer:getShootPos()
+    view.drawviewer = false
+    return view
+end
+
+hook.add( "calcview", "View", specCalcView )

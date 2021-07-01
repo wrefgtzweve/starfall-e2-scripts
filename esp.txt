@@ -6,7 +6,7 @@ if CLIENT then
     local Players
 
     if player() == owner() then
-        render.setHUDActive(true)
+        enableHud(owner(),true)
     end
     
     local scrW, scrH
@@ -25,6 +25,7 @@ if CLIENT then
     hook.add("PlayerDisconnected","discon",Find )
     hook.add("PlayerSpawn","firstspawn",Find )
     
+--[[
     hook.add("postdrawopaquerenderables","draw",function()
         for N,Player in pairs(Players) do
         
@@ -43,6 +44,7 @@ if CLIENT then
             render.draw3DWireframeBox(Player:getPos(),Player:getAngles(),Player:obbMaxs(),Player:obbMins())
         end
     end)
+]]
     
     hook.add("drawhud","draw",function()
         for N,Player in pairs(Players) do
@@ -52,7 +54,7 @@ if CLIENT then
                 break
             end
         
-            if Player == owner() or Player == player() then
+            if Player == player() then
                 continue
             end
             
@@ -61,13 +63,7 @@ if CLIENT then
             local TeamColor = team.getColor(Player:getTeam())
             
             render.setColor(TeamColor)
-            
-            render.drawText(Cords["x"]-#Player:getName()*3,Cords["y"]-100000/Dis,Player:getName(), alignment)
-            
-            HealthColor = Color(math.clamp(255 - 255*Player:getHealth()/100,0,255),math.clamp(255*Player:getHealth()/100,0,255),0)
-            render.setColor(HealthColor)
-            
-            render.drawRect(Cords["x"]-10000/Dis,Cords["y"]+1000/Dis,math.clamp(20000*Player:getHealth(),1,20000)/Dis,5000/Dis)
+            render.drawText(Cords["x"]-#Player:getName()*3,Cords["y"]-70000/Dis,Player:getName(), alignment)
         end
     end)
 end

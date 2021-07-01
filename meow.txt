@@ -1,0 +1,30 @@
+--@name MEOW
+--@author Redox
+--@client
+
+local urls = {
+    "https://cdn.discordapp.com/attachments/822502262614130718/842589316459003936/redbands_cat.mp3",
+    "https://cdn.discordapp.com/attachments/742682456917934087/843186283441553418/redbands_cat2.mp3"
+}
+
+local redband = find.playersByName("redband")[1]
+if player() == redband then return end
+
+local meows = {}
+
+for x = 1, #urls do
+  bass.loadURL( urls[x], "3d noblock noplay", function( snd, err, errtxt )
+        meows[x] = snd
+    end)
+end
+
+timer.create( "meow", 1, 0, function()
+    local snd = meows[math.random( 1, 2 )]
+    
+    if not snd then return end
+    
+    snd:pause()
+    snd:setTime( 0 )
+    snd:setPos( redband:getPos() )
+    snd:play()
+end )

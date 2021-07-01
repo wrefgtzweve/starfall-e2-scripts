@@ -1,0 +1,35 @@
+--@name barrel fix
+--@author Redox
+--@server
+
+local model = "models/props_c17/oildrum001_explosive.mdl"
+
+local function runExplodeTouch( barrel, trigger )
+    if not isValid(barrel) then return end
+    if barrel:getOwner() ~= owner() then return end
+    if barrel:getModel() ~= model then return end
+    barrel:ignite(1000)
+    if not isValid(barrel:getPhysicsObject()) then return end
+    barrel:addVelocity( ( barrel:getPos() - trigger:getPos() ) * 5 )
+end
+
+local function runBreakables( ent )
+    if not isValid( ent ) then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getModel() == model then return end
+    if ent:getHealth() <= 0 then return end
+    
+    ent:breakEnt()
+end
+
+hook.add( "PropBreak", "breakFix", function( ply, ent )
+    if not isValid(ent) then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getModel() ~= model then return end
+    local Props = find.inSphere( ent:getPos(), 200 )
+    
+    for _, Prop in ipairs( Props ) do
+        runExplodeTouch( Prop, ent )
+        runBreakables( Prop )
+    end
+end)

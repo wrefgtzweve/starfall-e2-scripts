@@ -1,0 +1,25 @@
+--@name Constraint checker
+--@author Redox
+--@server
+--@model models/props_lab/harddrive02.mdl
+
+local function check( ply )
+    local props = find.byClass( "prop_physics", function( ent )
+        return ent:getOwner() == ply
+    end)
+    
+    local constraints = 0
+    for _, propp in pairs(props) do
+        constraints = constraints + #propp:getAllConstrained()
+    end
+    print(constraints)
+end
+
+hook.add("Playersay","said",function( ply, text )
+    if text:sub(1,8) == "!ccheck " and ply == owner() then
+        local target = find.playersByName(text:sub(9))
+        if not target[1] then return print("Couldn't find that player.") end
+        check(target[1])
+        return ""
+    end
+end)

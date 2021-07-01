@@ -1,0 +1,49 @@
+--@name This person does not exist
+--@author Redox
+--@shared
+--[[
+https://www.thiswaifudoesnotexist.net/example-9004.jpg
+https://thisfursonadoesnotexist.com/v2/jpgs-2x/seed69198.jpg
+https://thishorsedoesnotexist.com/
+https://thiscatdoesnotexist.com/
+https://thispersondoesnotexist.com/image
+https://thisponydoesnotexist.net/v1/w2x-redo/jpgs/seed37357.jpg
+]]
+
+if CLIENT then
+    local mat = material.create("UnlitGeneric")
+    
+    local function startTimer()
+        timer.create("x",2,0,function()
+            pcall(function()
+                mat:setTextureURL("$basetexture","https://thisfursonadoesnotexist.com/v2/jpgs-2x/seed"..math.random(10000,99999)..".jpg",function(mat, url, width, height, layout)
+                    layout(0,0, 1024, 1024)
+                end)
+            end)
+        end)
+    end
+        
+    if hasPermission("material.urlcreate") then
+        startTimer()
+    else
+        setupPermissionRequest({"material.urlcreate"}, "Please provide access.", true)
+            hook.add("permissionrequest", "permission", function()
+            startTimer()
+        end)
+    end
+    
+    hook.add("render", "imagerender", function()
+        renderEnt = render.getScreenEntity()
+        scrW, scrH = render.getResolution()
+        
+        if hasPermission("material.urlcreate") or mat == "UnlitGeneric" then
+                    render.setMaterial(mat)
+                    render.drawTexturedRect(0,0, scrW, scrH)
+                else
+                
+                    render.setFont("DermaLarge")
+                    render.drawText(scrW/2, scrH/2, "Use this screen", 1, 1)
+                    
+            end
+    end)
+end

@@ -1,0 +1,11 @@
+--@name script that does walky
+--@author Redox
+--@client
+
+if player() ~= owner() then return end
+timer.create("Loop",300,0,function()
+    concmd("+forward")
+    timer.simple(0.01,function()
+        concmd("-forward")
+    end)
+end)

@@ -1,0 +1,15 @@
+--@name honk
+--@author Redox
+--@server
+
+hook.add("EntityTakeDamage","x",function (ent)
+    if quotaAverage() > quotaMax()*0.90 or not holograms.canSpawn() then 
+        return 
+    end
+    local pos = ent:getPos()
+    local holo = holograms.create(pos,Angle(),"models/props_junk/PopCan01a.mdl")
+    
+    holo:setColor(Color(0,0,0,0))
+    holo:emitSound("bikehorn.wav",75,100)
+    timer.simple(1,function() holo:remove() end)
+end)

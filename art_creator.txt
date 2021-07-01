@@ -1,0 +1,25 @@
+--@name art creator
+--@author Redox
+--@server
+
+local maxRange = 1500
+local minRange = 500
+local propTable = {
+    "models/hunter/blocks/cube025x025x025.mdl"
+}
+local Material = "models/debug/debugwhite"
+local propColor = Color( 0, 255, 0 )
+
+timer.create( "spawnProp", 0.25, 0, function()
+    if not prop.canSpawn() then return end
+    if not owner():keyDown( 32 ) then return end
+    local ply = owner()
+    local  pos = owner():getShootPos() + ( ply:getEyeAngles():getForward() * math.random(minRange,maxRange))
+    pcall(function()
+        local Prop = prop.create( pos, ply:getEyeAngles() + Angle(0,0,90), propTable[math.random(1,table.count(propTable))], true )
+        Prop:setColor( propColor )
+        Prop:setMaterial( Material )
+        Prop:setCollisionGroup( 20 )
+        Prop:setUnbreakable( true )
+    end)
+end)

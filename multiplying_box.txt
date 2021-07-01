@@ -1,0 +1,21 @@
+--@name Multiplying box
+--@author Redox
+--@server
+
+local model = "models/props_junk/wood_crate001a.mdl"
+local boxProp = prop.create( chip():getPos() + Vector(0,0,50) ,Angle() , model )
+
+local function spawnBox( ent )
+    if not prop.canSpawn() then return end
+    local boxProp = prop.create( ent:getPos() ,Angle() , model )
+    if not prop.canSpawn() then return end
+    local boxProp = prop.create( ent:getPos() ,Angle() , model )
+end
+
+hook.add( "PropBreak", "BoxDupe", function( ply, ent )
+    if not isValid(ent) then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getModel() ~= model then return end
+    
+    spawnBox( ent )
+end)

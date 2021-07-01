@@ -1,0 +1,29 @@
+--@name Block
+--@author Redox
+--@server
+
+local x = find.playersByName("zanbrad",false,false)[1]
+local blockProp = chip():isWeldedTo()
+local seat = prop.createSent(chip():getPos()+Vector(0,0,50),Angle(),"Chair_Office2")
+
+blockProp:enableMotion(false)
+blockProp:setCollisionGroup( 10 )
+blockProp:setColor(Color(0,0,0,0))
+
+seat:enableMotion(false)
+seat:setColor(Color(0,0,0,0))
+
+constraint.breakAll(chip())
+
+hook.add("think","t",function()
+    if not x:isNoclipped() and not x:inVehicle() then blockProp:setPos(Vector(0,0,0)) return end
+    blockProp:setPos(x:getPos()+Vector(0,0,20))
+end)
+
+hook.add("KeyPress","",function(ply, key)
+    if ply == x and key == 32 then
+        seat:setPos(x:getPos()+Vector(0,0,20))
+    else
+        seat:setPos(Vector(0,0,0))
+    end
+end)
