@@ -16,7 +16,7 @@ local function spawnMissile( target )
     if not isValid( target ) then return end
     if not prop.canSpawn() then return end
 
-    local missileEnt = prop.create( chip():getPos() + chip():getForward() * 110, chip():getAngles(), "models/props_phx/ww2bomb.mdl", false )
+    local missileEnt = prop.create( chip():getPos() + chip():getForward() * 110, chip():getAngles(), "models/props_phx/amraam.mdl", false )
     missileEnt.target = target
     missileEnt:addCollisionListener( function( data )
         pcall(function()

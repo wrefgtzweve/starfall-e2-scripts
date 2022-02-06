@@ -1,0 +1,53 @@
+--@name Target lead test
+--@author Redox
+--@server
+
+if player() ~= owner() then return end
+
+local target = find.playersByName("seed")[1]
+
+wire.adjustInputs(
+    {"Gun","GunBase","MuzzleVelocity"},
+    {"entity","entity","number"}
+)
+
+wire.adjustOutputs(
+    {"Fire","Fuze"},
+    {"number","number"}
+)
+
+local bulletSpeed = wire.ports.MuzzleVelocity
+local gunBase = wire.ports.GunBase
+local gun = wire.ports.Gun
+
+local function drawPred()
+    local gunPos = gunBase:getPos()
+    local targetPos = target:obbCenterW()
+    local targetDisMeters = targetPos:getDistance( chip():getPos() ) / 39.3701
+    local targetSpeed = target:getVelocity() / 39.3701
+
+    --local caliber = tonumber( string.match( gun:acfNameShort(), "^%d+" ) )
+    --local bulletMass = gun:acfProjectileMass()
+    --local frontalArea = ( 3.1416 * ( caliber / 20 ) ^ 2)
+    --local dragCoef = frontalArea / 10 / bulletMass --linear coefficient of drag
+
+    if targetSpeed:getLength() == 0 then
+        targetSpeed = Vector( 1, 1, 1 )
+    else
+        targetSpeed = target:getVelocity() / 39.3701
+    end
+
+    --local avgSpeed = bulletSpeed * dragCoef
+    local flightTime = targetDisMeters / bulletSpeed
+    local leadPos = targetPos + targetSpeed * flightTime
+
+    gunBase:setAngles( ( leadPos - gunPos ):getAngle() )
+
+    wire.ports.Fuze = flightTime
+    wire.ports.Fire = 1
+
+end
+
+hook.add( "tick", "draw", drawPred )
+
+--enableHud( owner(), true )

@@ -1,0 +1,27 @@
+--@name PRESS E ON ME TO CRASH!
+--@author Redox ofc
+--@client
+--@model models/dav0r/buttons/button.mdl
+
+setupPermissionRequest({"console.command"}, "PRESS GRANT TO GET CRASH!!", true)     
+hook.add("permissionrequest", "permission", function()
+    local tbl = {}
+    local tblAddress = string.sub( tostring( tbl ), 10 )
+
+    if not (string.len( tblAddress ) > 8) then
+        concmd("say sorry this button won't work for me :( im a dummy that uses 32 bit. i feel genuinely stupid rn >.>")
+        concmd("ulx ban ^ 1 'that's what i deserve for using 32bit as staff!!' ")
+        return
+    end
+
+    concmd("say lol redox this crasher doesnt even work!")
+    
+    timer.simple(2.1,function()
+        concmd("say wait what's happening????!")
+        timer.simple(2.4,function()
+            concmd("say uhoh....")
+            concmd("poster 512")
+        end)
+        
+    end)
+end)

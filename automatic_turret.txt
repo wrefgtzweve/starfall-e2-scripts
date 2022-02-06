@@ -2,13 +2,6 @@
 --@author Redox
 --@server
 
-local lerpFoot = 0.15 -- Speed for lerp for walking targets 0.15
-local lerpVehicle = 0.8 -- Speed for lerp for vehicle targets 0.8
-
--- DONT TOUCH FROM UNDER HERE
-
-local nextFire = 0
-
 wire.adjustInputs(
     {"Gunbase","Azimuth"},
     {"entity","entity"}
@@ -49,9 +42,10 @@ local function isBroken()
     return false
 end
 
-local function traceT( ply )
-    local tr = trace.trace( gunbase:getPos(), ply:getPos(), function(a)
-        return true
+local function traceT( target )
+    local tr = trace.trace( gunbase:getPos(), target:obbCenterW(), function( ent )
+        if ent == target then return true end
+        return false
     end)
     return tr
 end
@@ -59,63 +53,56 @@ end
 local function aim()
     if isBroken() then return end
     local aimAngle
-    
-    if not target or not target:isAlive() or pvp.playerIsInBuild( target ) then
+
+    if not target or not target:isAlive() then
         target = closestPlayer()
-        wire.ports.Fire = 0
         return
     end
-    tr = traceT( target )
+    local tr = traceT( target )
 
     if tr.HitWorld then
         wire.ports.Fire = 0
         aimAngle = Angle( 0, 90, 0 )
         target = closestPlayer()
+        return
+    else
+        wire.ports.Fire = 1
+        aimAngle = ( ( target:obbCenterW() )-  gunbase:getPos() ):getAngle()
     end
-    wire.ports.Fire = 1
 
     local aziPhy = azimuth:getPhysicsObject()
     if aziPhy:isAsleep() then
         aziPhy:wake()
         aziPhy:enableMotion( true )
     end
-    
-    if not target then return end
-    if target:inVehicle() then
-        aimAngle = ( target:getVehicle():obbCenterW() -  gunbase:getPos() ):getAngle()
-        aimAngle = math.lerpAngle( lerpVehicle, gunbase:getAngles(), aimAngle )
-    else
-        aimAngle = ( target:obbCenterW() -  gunbase:getPos() ):getAngle()
-        aimAngle = math.lerpAngle( lerpFoot, gunbase:getAngles(), aimAngle )
-    end
+    aimAngle = math.lerpAngle( 0.05, gunbase:getAngles(), aimAngle )
     gunbase:setAngles( aimAngle )
-    
-    wire.ports.Fire = 1
-    wire.ports.Fire = 1
 end
 
 local function aquirePlayers()
     if isBroken() then return end
     visiblePlayers = find.allPlayers(function( ply )
         if pvp.playerIsInBuild( ply ) then return false end
+        if ply:getDistance( gunbase ) > 4000 then return false end
         if not ply:isAlive() then return false end
         
         local testEnt
+        local vehicle = false
         if ply:inVehicle() then
             testEnt = ply:getVehicle()
+            vehicle = true
         else
             testEnt = ply
+            return false
         end
         
         local tr = traceT( testEnt )
-        if not tr.Hit then return false end
-        if not tr.Entity then return false end
-        if tr.Entity ~= testEnt then return false end
+        if tr.HitWorld then return false end
         return true
     end)
     table.removeByValue( visiblePlayers, owner() )
     --table.insert( visiblePlayers, owner() )
 end
-aquirePlayers()
+
 hook.add( "Think", "turretAim", aim )
-timer.create( "checkPlayersTimer", 0.1, 0, aquirePlayers )
+timer.create( "checkPlayersTimer", 0.5, 0, aquirePlayers )

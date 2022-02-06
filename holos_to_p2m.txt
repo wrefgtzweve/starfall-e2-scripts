@@ -1,0 +1,33 @@
+--@name Holos to p2m
+--@author Redox
+--@server
+
+local controller = prop2mesh.create( 1, chip():getPos(), chip():getAngles() )
+controller:setNoDraw( false )
+
+local base = chip():isWeldedTo()
+local holos = {}
+for _, v in ipairs( base:getAllConstrained() ) do
+    if v:getClass() == "gmod_wire_hologram" then
+        table.insert( holos, v )
+    end
+end
+
+local sortedHolos = {}
+local function sortHolo( holo )
+    local mat = holo:getColor()
+    
+    if mat == "" then mat = "nomat" end
+
+    if not sortedHolos[mat] then
+        sortedHolos[mat] = {}
+    end
+
+    table.insert( sortedHolos[mat], holo )
+end
+
+for _, v in ipairs( holos ) do
+    sortHolo( v )
+end
+
+printTable( sortedHolos )

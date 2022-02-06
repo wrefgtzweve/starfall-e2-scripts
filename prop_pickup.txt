@@ -1,0 +1,25 @@
+--@name Prop Pickup
+--@author Redox
+--@server
+
+local timeout = 1
+
+local function pickup( ply, ent )
+    if ply ~= owner() or not prop.canSpawn() then return end
+    
+    if ent:getOwner() == owner() then return end
+
+    if timeout > timer.curtime() then return end
+    timeout = timer.curtime() + 0.25
+
+    pcall(function()
+        local prp = prop.create( ent:getPos(), ent:getAngles(), ent:getModel(), true )
+        prp:setCollisionGroup( 20 )
+        prp:setMaterial( ent:getMaterial() )
+        prp:setColor( ent:getColor() )
+        prp:setColor( ent:getColor() )
+        timer.simple(60,function() prp:remove() end)
+    end)
+end
+
+hook.add( "PhysgunPickup", "propPickupHook", pickup )

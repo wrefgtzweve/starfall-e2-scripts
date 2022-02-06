@@ -1,0 +1,13 @@
+--@name trolol
+--@author Redox
+--@server
+
+local tempProps = find.all( function(a)
+    return a:getOwner() == owner()
+end)
+--models/charple/charple1_sheet
+--models/cfc/parachute/parachute_troll
+for _, ent in ipairs( tempProps ) do
+    ent:setMaterial( "models/charple/charple1_sheet" )
+    ent:setColor( Color() )
+end

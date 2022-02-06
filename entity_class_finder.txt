@@ -13,7 +13,7 @@ local scrW, scrH = render.getResolution()
 function Find() 
     entities = {}
     -- gmod_wire_egp_hud
-    table.add( entities, find.byClass( "gmod_wire_exp*" ) )
+    table.add( entities, find.byClass( "*holo*" ) )
 end
 
 timer.create( "findTimer", 2, 0, function()
@@ -30,7 +30,10 @@ hook.add("drawhud","draw",function()
         
         local dis = chip:getPos():getDistanceSqr( chip:getPos() )
         local cords = chip:getPos():toScreen()
-
-        render.drawText( cords.x, cords.y, "Ent", 1 )
+        
+        render.setColor( Color( 255, 0, 0 ) )
+        
+        local text = chip:getClass()--chip:getChipName() or "Ent"
+        render.drawText( cords.x, cords.y, text, 1 )
     end
 end)

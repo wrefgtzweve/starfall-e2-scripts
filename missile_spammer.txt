@@ -1,0 +1,24 @@
+--@name Missile spammer
+--@author Redox
+--@server
+
+local Z = 0
+local X = 0
+local props = {}
+
+timer.create("initloop", 0.25, 0, function()
+    if #props > 575 then
+        Z = 0
+        return
+    end
+    if X == 24 then
+        X = 0
+        Z = Z + 1
+    end
+    pcall( function()
+        ENT = prop.create(chip():getPos() + Vector( X * 3, 0, 20 + Z * 3 ), Angle(0,90,0), "models/props_phx/mk-82.mdl", true )
+        ENT:setUnbreakable( true )
+        table.insert( props, ENT )
+        X = X + 1
+    end)
+end)

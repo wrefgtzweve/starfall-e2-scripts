@@ -12,14 +12,26 @@ local function check( ply )
     for _, propp in pairs(props) do
         constraints = constraints + #propp:getAllConstrained()
     end
-    print(constraints)
+    return constraints
 end
 
 hook.add("Playersay","said",function( ply, text )
-    if text:sub(1,8) == "!ccheck " and ply == owner() then
+    if ply ~= owner() then return end
+
+    if text:sub( 1, 8 ) == "!ccheck "then
         local target = find.playersByName(text:sub(9))
         if not target[1] then return print("Couldn't find that player.") end
-        check(target[1])
+        print( "Constraints : " .. check(target[1]) )
+        return ""
+    end
+    
+    if text:sub( 1, 10 ) == "!ccheckall" then
+        local players = find.allPlayers()
+        for _, ply in ipairs( players ) do
+            print( ply:getName() .. " :" )
+            print( check( ply ) )
+        end
+
         return ""
     end
 end)

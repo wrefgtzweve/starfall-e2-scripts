@@ -1,0 +1,83 @@
+--@name Self Driving Cars
+--@author Redox
+--@server
+
+local Target
+local shouldBreak
+local Cars = {}
+
+local function closestPlayer(ent)
+    local from = ent:getPos()
+    local closest
+    local limit = 1e8
+    for k, v in pairs(find.allPlayers()) do
+        local distance = from:getDistanceSqr(v:getPos())
+        if distance < limit and pvp.playerIsInPvp(v) and v:isAlive() and v:getColor().a ~= 175 --[[and v ~= owner()]] then
+            closest = v
+            limit = distance
+        end
+    end
+    return closest
+end
+
+local function linkCar(ent)
+    Cars[ent] = {}
+    Cars[ent].wirelink = ent:getWirelink()
+    Cars[ent].wirelink["Lock"] = 1
+    Cars[ent].wirelink["Engine Start"] = 1
+end
+
+hook.add("think","runloop",function()
+    for Car in pairs(Cars) do
+        if not isValid(Car) then
+            Cars[Car] = nil
+            return
+        end
+        
+        local Target = Cars[Car].Target
+        local Wirelink = Cars[Car].wirelink
+
+        if isValid(Target) == false then Wirelink["Throttle"] = 0 return end
+        
+        local pos = worldToLocal(Target:getPos(),Angle(0,0,0),Car:getPos(),Car:getAngles())
+        local Rad = (180/3.14)*-math.atan2(pos.y, pos.x)
+        local Distance = Target:getPos():getDistanceSqr( Car:getPos() )
+
+        if Distance < 10000 then
+            Car:emitSound("hahayoufool.wav", 75, 100)
+            Car:applyDamage(10000)
+        end
+        if Distance < 40000 and Target:inVehicle() then
+            --Car:applyDamage(10000)
+        end
+        
+        if Rad > -90 and Rad < 90 then
+            -- forward
+            Wirelink["Steer"] = ( 1 / 30 ) * Rad
+            Wirelink["Throttle"] = ( 1 --[[Distance / 100]] ) - 0.1
+            Wirelink["Brake/Reverse"] = 0
+        else
+            -- backwards
+            Wirelink["Steer"] = -( 1 / 30 ) * Rad
+            Wirelink["Brake/Reverse"] = ( 1 --[[Distance / 100]] ) - 0.1
+            Wirelink["Throttle"] = 0
+        end
+    end
+end)
+
+hook.add("OnEntityCreated","CarFind",function(ent)
+    if not ent:isValid() then return end
+    if ent:getOwner() ~= owner() then return end
+    if ent:getClass() ~= "gmod_sent_vehicle_fphysics_base" then return end
+    timer.simple(1,function()
+        linkCar(ent)
+    end)
+end)
+
+timer.create("playercheck", 1, 0,function()
+    for Car in pairs(Cars) do
+        if #pvp.getPvpers() ~= 0 then
+            Cars[Car].Target = closestPlayer(Car)
+        end
+    end
+end)

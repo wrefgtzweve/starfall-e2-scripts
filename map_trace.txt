@@ -1,0 +1,60 @@
+--@name Map Trace
+--@author Redox
+--@server
+
+local HALFMAP = 16384
+local HEIGHT = 0
+local Accuracy = 2000 --Source units / trace
+
+local total = math.floor( ( ( HALFMAP * 2 ) / Accuracy ) ^ 2 )
+local tracesLeft = total
+local tracesDone = 0
+
+local pointerPos = Vector( -HALFMAP, -HALFMAP, 0 )
+local incrementVec = Vector( Accuracy, 0, 0 )
+local lastTraceHit = Vector( 16384, 16384, 16384 )
+
+local function runTrace()
+    if tracesLeft <= 0 then return end
+
+    local traceDown = pointerPos - Vector( 0, 0, 32768 )
+    local trc = trace.trace( pointerPos, traceDown )
+    lastTraceHit = trc.HitPos
+    pointerPos = pointerPos + incrementVec
+
+    if pointerPos.x > 16384 then
+        pointerPos = Vector( -HALFMAP, pointerPos.y + Accuracy, 0 )
+    end
+    
+    local difference = lastTraceHit.z + 200
+    
+    --if difference < trc.HitPos.z or difference > trc.HitPos.z then
+    if trc.Fraction == 1 then return end
+    if not holograms.canSpawn() then return end
+    chip():setPos( trc.HitPos )
+    local holo = holograms.create( trc.HitPos, Angle(), "models/hunter/plates/plate3x3.mdl" )
+    holo:setMaterial( "debug/debugportals" )
+end
+
+local function printProgress()
+    local percentage = math.floor( 100 / total * tracesDone )
+    print( tostring( tracesLeft ) .. " : " .. tostring( percentage ) .. "%" )
+end
+
+local function runTraceLoop()
+    while quotaAverage() < ( quotaMax() * 0.5 ) do
+        if tracesLeft <= 0 then
+            timer.remove( "traceTick" )
+            timer.remove( "progressUpdate" )
+            printProgress()
+            return
+        end
+
+        runTrace()
+        tracesLeft = tracesLeft - 1
+        tracesDone = tracesDone + 1
+    end
+end
+
+timer.create( "traceTick", 0, 0, runTraceLoop )
+timer.create( "progressUpdate", 3, 0, printProgress )

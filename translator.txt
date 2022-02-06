@@ -1,0 +1,79 @@
+--@name Translator
+--@author Redox
+--@server
+
+--POST https://translation.googleapis.com/language/translate/v2
+-- zh-Hans
+
+local lang = "en"
+local translateApi = "https://duckduckgo.com/translation.js?vqd=3-75892067011736897468724370750140464439-280509451133730326558126197493862202840&query=translator&to="
+
+local function sendMsg( txt )
+    timer.simple( 0.5, function()
+        concmd( "say " .. txt )
+    end)
+end
+
+local function getTransLated( txt )
+    if not http.canRequest() then return end
+    http.post( translateApi .. lang,
+        txt,
+        function( body )
+            local tbl = json.decode( body )
+            if tbl.error then
+                print( "Translator errored with " .. tbl.error )
+                return
+                end
+             
+            local output = tbl.translated
+            sendMsg( output )
+        end,
+        function()
+            print("Translator api connection failed.")
+            return
+        end
+    )
+end
+
+local function checkLanguage( txt, chatter )
+    if not http.canRequest() then return end
+    http.post( translateApi .. "en",
+        txt,
+        function( body )
+            local tbl = json.decode( body )
+            if tbl.error then
+                print( "Translator errored with " .. tbl.error )
+                return
+            end
+             
+            local output = tbl.detected_language
+            if tbl.detected_language ~= "en" then
+                print( chatter .. "[".. tbl.detected_language .. "] " .. tbl.translated )
+            end
+        end,
+        function()
+            print("Translator api connection failed.")
+            return
+        end
+    )
+end
+
+hook.add("Playersay","said",function( ply, text )
+    if ply ~= owner() then
+        checkLanguage( text, ply:getName() )
+        return
+    end
+
+    local expl = string.explode( " ", text )
+    
+    if string.sub( text, 1, 1 ) == "." then
+        local inputText = string.sub( text, 2 )
+        local message = getTransLated( inputText )
+        return ""
+    end
+    
+    if expl[1] == "/lang" or expl[1] == "/l" then
+        lang = expl[2]
+        return ""
+    end
+end)

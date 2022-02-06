@@ -1,0 +1,28 @@
+--@name hide builders
+--@author Redox
+--@client
+
+if player() ~= owner() then return end
+
+enableHud( owner(), true )
+
+local builders = {}
+
+local function scan()
+    builders = {}
+    for _, ply in ipairs( find.allPlayers(function(ply) return ply:isInBuild() end) ) do
+        table.insert( builders, ply )
+    end
+end
+
+local function renderStuff()
+    for _, builder in ipairs( builders ) do
+        if not isValid(builder) then return end
+        render.setColor( Color( 150, 150, 150 ) )
+        render.draw3DBox( builder:getPos(), builder:getAngles(), builder:obbMins(), builder:obbMaxs() )
+    end
+end
+
+hook.add("postdrawopaquerenderables","x", renderStuff )
+
+timer.create("builderChecker", 1, 0, scan )

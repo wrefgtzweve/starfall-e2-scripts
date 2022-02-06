@@ -1,0 +1,74 @@
+--@name Prop rebuilder V2
+--@author Redox
+--@server
+
+local Props = {}
+prop.setPropClean(false)
+
+local function Scan ()
+    local tempProps = find.byClass( "prop_physics", function(a)
+        return a:getOwner() == owner()
+    end)
+    for N, Prop in pairs( tempProps ) do
+        Prop:enableMotion( false )
+        Props[N] = {}
+        Props[N].ent = Prop
+        Props[N].pos = Prop:getPos()
+        Props[N].angles = Prop:getAngles()
+        Props[N].model = Prop:getModel()
+        Props[N].material = Prop:getMaterial()
+        Props[N].color = Prop:getColor()
+    end
+    
+    print( "Scanning finished, " .. table.count(Props) .. " props are now protected." )
+end
+
+local function Rebuild(N)
+    if not prop.canSpawn() then return end
+    pcall(function()
+        local tempProp = prop.create( Props[N].pos, Props[N].angles, Props[N].model, true )
+        tempProp:setColor(Props[N].color)
+        tempProp:setMaterial(Props[N].material)
+        Props[N].ent = tempProp
+    end)
+end
+
+function Remove (N)
+    local Remove = owner():getEyeTrace()["Entity"]
+    for N in pairs( Props ) do
+        if Props[N].ent == Remove then
+            table.remove(Props,N)
+            Remove:breakEnt()
+            print("Prop removed from the table.")
+            return
+        end
+    end
+end
+
+timer.create("Loop",1,0,function()
+    for N in pairs( Props ) do
+        if not Props[N].ent:isValid() then
+            Rebuild(N)
+            continue
+        end
+        if Props[N].ent:isValidPhys() then
+            if not Props[N].ent:isFrozen() then
+                Props[N].ent:breakEnt()
+                Rebuild(N)
+            end
+        end
+    end
+end)
+
+hook.add("Playersay","said",function(player,text)
+    if text:sub(1,5)=="!scan" then
+        Scan()
+        return ""
+    end
+    if text:sub(1,7)=="!remove" then
+        Remove()
+        return ""
+    end
+end)
+
+Scan()

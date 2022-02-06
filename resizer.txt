@@ -1,0 +1,12 @@
+--@name resizer
+--@author Redox
+--@server
+
+local function resize( ent )
+    if ent:getOwner() ~= owner() then return end
+    for i = 0, ent:getBoneCount() do
+        ent:manipulateBoneScale( i, Vector(5, 0.5, 0.5) )
+    end
+end
+
+hook.add( "OnEntityCreated", "resize", resize )

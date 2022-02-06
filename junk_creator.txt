@@ -1,0 +1,50 @@
+--@name junk creator
+--@author Redox
+--@server
+
+local owner = owner()
+local canSpawn = true
+local toggle = true
+
+local tbl = {
+    "models/props_c17/oildrum001_explosive.mdl",
+    "models/props_c17/FurnitureDrawer001a.mdl",
+    "models/props_c17/FurnitureFridge001a.mdl",
+    "models/props_junk/wood_crate001a.mdl",
+    "models/props_junk/PropaneCanister001a.mdl",
+    "models/props_c17/FurnitureDrawer003a.mdl",
+    "models/props_c17/FurnitureRadiator001a.mdl",
+    "models/props_junk/TrashDumpster02b.mdl",
+    "models/props_combine/breenglobe.mdl",
+    "models/props_junk/meathook001a.mdl",
+    "models/props_junk/TrashBin01a.mdl",
+    "models/props_junk/ravenholmsign.mdl",
+    "models/props_wasteland/laundry_cart001.mdl",
+    "models/props_wasteland/controlroom_chair001a.mdl",
+    "models/props_trainstation/TrackSign02.mdl",
+    "models/props_combine/combine_barricade_short02a.mdl",
+    "models/props_lab/blastdoor001a.mdl",
+    "models/props_wasteland/controlroom_desk001a.mdl"
+}
+
+hook.add( "OnEntityCreated", "checkProp", function( ent )
+    if not isValid( ent ) then return end
+    if ent:getOwner() ~= owner then return end
+    if ent:getClass() ~= "prop_physics" then return end
+    
+    local pos = owner:getEyePos() + owner:getEyeAngles():getForward() * math.random( 100, 600 )
+    ent:setPos( pos )
+    local ang = 180
+    ent:setCollisionGroup( 3 )
+    ent:enableMotion( true )
+    ent:setDrawShadow( true )
+    ent:setAngles( Angle( math.random(-ang,ang), math.random(-ang,ang), math.random(-ang,ang) ) )
+    ent:applyForceCenter( owner:getAimVector() * 999999 )
+    ent:setMass( 250 )
+    ent:setDrawShadow( false )
+end)
+
+hook.add( "think", "propSpam", function()
+    if not owner:keyDown( 32 ) then return end
+    concmd( "gm_spawn " .. tbl[math.random(1,table.count(tbl))] )
+end)

@@ -1,0 +1,24 @@
+--@name Xray screen
+--@author Redox
+--@client
+
+local plyHolos = {}
+
+for _, ply in ipairs( find.allPlayers() ) do
+    local holo = holograms.create( ply:getPos(), ply:getAngles(), ply:getModel() )
+    holo:setNoDraw(true)
+    plyHolos[ply] = holo
+end
+
+hook.add("render", "roomrender", function()
+    for ply, holo in pairs( plyHolos ) do
+        if ply == player() then continue end
+        holo:setPos( ply:getPos() )
+        local ang = ply:getEyeAngles()
+        holo:setScale( Vector( 1 + ply:voiceVolume() * 10, 1 + ply:voiceVolume() * 10, 1 ) )
+        holo:setParent( ply )
+        holo:addEffects( 1 )
+        holo:setAngles( Angle( 0, ang.p, 0 ) )
+        holo:draw()
+    end
+end)

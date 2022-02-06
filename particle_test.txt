@@ -8,7 +8,7 @@ local roll = math.rad( 80 )
 
 timer.create( "createParticle", 0.33, 0, function ()
     roll = -roll
-    local pos = chip():getPos() + Vector( math.random(-10, 10), math.random(-10, 10), math.random(60, 70) )
+    local pos = owner():getPos() + Vector( math.random(-10, 10), math.random(-10, 10), math.random(140, 150) )
     local part = emitter:add( mat, pos, 10, 5, 0, 0, 255, 0, 1.5)
     part:setColor( Color( 255, 0, 0 ) )
     part:setVelocity( Vector(0, 0, -40) )

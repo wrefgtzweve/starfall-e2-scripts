@@ -1,0 +1,31 @@
+--@name hitmarkers
+--@author Redox
+--@shared
+
+if player() ~= owner() then return end
+
+if SERVER then
+    local tbl = {}
+    for _, v in ipairs( find.allPlayers() ) do
+        table.insert( tbl, { name = v:getName(), pos = v:getPos() } )
+    end
+    net.start( "stink" )
+    net.writeTable( tbl )
+    net.send( owner() )
+else
+    local plys = {}
+    net.receive( "stink", function()
+        plys = table.copy( net.readTable() )
+    end)
+    
+    hook.add("drawhud","draw",function()
+        for _, ply in ipairs( plys ) do
+            local pos = ply.pos
+            local name = ply.name
+            local Dis = player():obbCenterW():getDistance(pos)
+            local cords = pos:toScreen()
+
+            render.drawText( cords.x, cords.y, name )
+        end
+    end)
+end

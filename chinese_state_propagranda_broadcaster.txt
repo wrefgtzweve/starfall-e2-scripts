@@ -1,16 +1,18 @@
---@name CHINESE STATE PROPAGRANDA BROADCASTER
+--@name CHINESE STATE BROADCASTING STATION
 --@author Redox
 --@client
 
 local snd
 
-bass.loadURL( "https://cdn.discordapp.com/attachments/544554827905236994/856584634316750858/redsuninsky.mp3","3d noblock noplay", function( x )
+bass.loadURL( "https://cdn.discordapp.com/attachments/822502262614130718/885995083239931924/Sergio_Valentino_-_Drive_Forever_-_.mp3","3d noblock noplay", function( x )
     snd = x
     snd:setPos( chip():getPos() )
-    snd:setVolume( 50 )
+    snd:setVolume( 4 )
+    snd:setLooping( true )
+    snd:setFade( 200, 1000 )
     snd:play()
 
     hook.add( "Think", "x", function()
-        snd:setPos( owner():getPos() )
+        snd:setPos( chip():getPos() )
     end)
 end)

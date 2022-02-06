@@ -1,0 +1,47 @@
+--@name QR generator
+--@author Redox
+--@client
+
+local text = "you're fat"
+
+local URL = "http://api.qrserver.com/v1/create-qr-code/?data="..text.."!&size=512x512"
+local mat = render.createMaterial("hunter/myplastic")
+local matWidth = mat:getWidth()
+local matHeight = mat:getHeight()
+local hasPerms = false
+local firstFrame = false
+
+local function getImage()
+    mat:setTextureURL("$basetexture", URL,function(_, _, width, height, layout)
+        if layout then
+            local Scaler = math.max(width, height)
+            local Ratio = (1024/Scaler)
+    
+            layout(0, 2, Ratio*width, Ratio*height)
+        end
+    end)
+end
+
+if hasPermission( "material.urlcreate" ) then
+    hasPerms = true
+    getImage()
+else
+    setupPermissionRequest( {"material.urlcreate"}, "Please provide permissions.", true )
+
+    hook.add("permissionrequest", "permission", function()
+        if hasPermission( "material.urlcreate" ) then
+            hasPerms = true
+            getImage()
+        end
+    end)
+end
+
+hook.add("render", "imagerender", function()
+    if hasPerms then
+        render.setMaterial( mat )
+        render.drawTexturedRect( 0, 0, 512, 512 )
+    else
+        render.setFont( "DermaLarge" )
+        render.drawText( 256, 256, "Press E on this screen for it to work.", 1, 1 )
+    end
+end)

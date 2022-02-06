@@ -1,0 +1,19 @@
+--@name Screen render test
+--@author Redox
+--@client
+
+local Props = find.byClass( "prop_physics", function(a)
+    return a:getOwner() == owner()
+end)
+
+for _, Prop in pairs(Props) do
+    Prop = holograms.create(Prop:getPos(),Prop:getAngles(),Prop:getModel())
+    Prop:setNoDraw(true)
+end
+
+
+hook.add("render", "roomrender", function()
+    for _, Prop in pairs(Props) do
+        Prop:draw()
+    end
+end)

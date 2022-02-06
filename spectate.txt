@@ -8,8 +8,8 @@ enableHud( owner( ), true )
 local isSpectating
 local specPlayer
 
-specPlayer = find.playersByName("cyril",false,false)[1]
-specPlayer:setNoDraw(true)
+specPlayer = find.playersByName("ark",false,false)[1]
+
 local function specCalcView()
     if not isValid(specPlayer) then return end
     

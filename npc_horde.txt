@@ -3,20 +3,43 @@
 --@model models/Gibs/HGIBS.mdl
 --@server
 
+local npcs = {}
+
+local function randomColor()
+    local color = Color( math.random( 0, 255 ), math.random( 0, 255 ), math.random( 0, 255 ) )
+    return color
+end
+
 local function spawnNpcs( pos, class, amount, radius )
     pos = pos + Vector( 0, 0, 10 )
-    amount = amount / 4
-    timer.create( "spawnNpcs", 1, amount, function()
-        for x = 1, amount do
-            local radiusPos = Vector( pos.x  + math.random( -radius, radius ), pos.y + math.random( -radius, radius ), pos.z + math.random( -radius, radius ) )
-            prop.createSent( radiusPos, Angle(), class, false )
-        end
+    timer.create( "spawnNpcs", 0.25, amount, function()
+        local spawnPos = Vector( pos.x  + math.random( -radius, radius ), pos.y + math.random( -radius, radius ), pos.z + 50 )
+        local npc = prop.createSent( spawnPos, Angle(), class, false )
+        npc:setMaterial( "models/debug/debugwhite" )
+        npc:setColor( randomColor() )
+        table.insert( npcs, npc )
     end)
 end
 --npc_fastzombie
 hook.add("Playersay","said",function( ply, text )
-    if text:sub( 1, 7 ) == "/spawn " and ply == owner() then
-        spawnNpcs( owner():getEyeTrace().HitPos, "npc_fastzombie", tonumber(text:sub( 7 )), 100 )
+    if ply ~= owner() then return end
+    local expl = string.explode( " ", text )
+    
+    if expl[1] == "/spawn" or expl[1] == "/s" then
+        spawnNpcs( owner():getEyeTrace().HitPos, expl[2], tonumber(expl[3]), 300 )
+        return ""
+    elseif expl[1] == "/target" or expl[1] == "/t" then
+        local trgt = find.playersByName( expl[2],false,false)[1]
+        
+        if not trgt then
+            print( "Could not find that player." )
+            return ""
+        end
+        
+        for k, npc in ipairs( npcs ) do
+            if not isValid( npc ) then npcs[k] = nil end
+            npc:setEnemy( trgt ) 
+        end
         return ""
     end
 end)

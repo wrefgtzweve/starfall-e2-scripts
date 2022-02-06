@@ -4,18 +4,40 @@
 
 local model = "models/props_junk/wood_crate001a.mdl"
 local boxProp = prop.create( chip():getPos() + Vector(0,0,50) ,Angle() , model )
+boxProp.multiplyEnt = true
+local entities = {}
+local count = 0
 
-local function spawnBox( ent )
-    if not prop.canSpawn() then return end
-    local boxProp = prop.create( ent:getPos() ,Angle() , model )
-    if not prop.canSpawn() then return end
-    local boxProp = prop.create( ent:getPos() ,Angle() , model )
+local function spawnSubEntity( ent )
+    local pos, ang = ent:getPos(), ent:getAngles()
+    local temp = table.random( entities )
+    table.removeByValue( entities, ent )
+    if not isValid( temp ) then return end
+    temp:setUnbreakable( false )
+    temp:enableMotion( true )
+    temp:setPos( pos )
+    temp:setAngles( ang )
 end
 
 hook.add( "PropBreak", "BoxDupe", function( ply, ent )
     if not isValid(ent) then return end
-    if ent:getOwner() ~= owner() then return end
-    if ent:getModel() ~= model then return end
+    if not ent.multiplyEnt then return end
     
-    spawnBox( ent )
+    count = count - 1
+
+    spawnSubEntity( ent )
+    spawnSubEntity( ent )
 end)
+
+local function createEnt()
+    if count > 600 then return end
+    
+    count = count + 1
+    local temp = prop.create( Vector() ,Angle() , model )
+    temp:setUnbreakable( true )
+    temp:enableMotion( false )
+    temp.multiplyEnt = true
+    table.insert( entities, temp )
+end
+
+timer.create( "createBoxes", 0.25, 0, createEnt )

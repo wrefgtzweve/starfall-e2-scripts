@@ -1,0 +1,11 @@
+--@name proploop 
+--@author Redox
+--@server
+
+local tempProps = find.all( function(a)
+    return a:getOwner() == owner()
+end)
+
+for _, ent in ipairs( tempProps ) do
+    ent:enableMotion( true )
+end

@@ -13,7 +13,7 @@ end
 if SERVER then
     print("===========")
     net.receive("net",function(_,ply)
-        name = ply:getName()
+        local name = ply:getName()
         print( name )
     end)
 end

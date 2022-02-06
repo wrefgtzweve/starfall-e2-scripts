@@ -1,0 +1,45 @@
+--@name spinnnn
+--@author Redox
+--@server
+
+local chipOwner = owner()
+
+local function aimbot( target )
+    local targethead = target:lookupBone( "ValveBiped.Bip01_Head1" )
+             local targetheadpos,targetheadang = target:getBonePosition( targethead )
+             chipOwner:setEyeAngles( ( target:getPos() -  chipOwner:getPos() ):getAngle() )
+end
+
+local function traceCheck( target )
+    local tr = trace.trace( chipOwner:getEyePos(), target:getEyePos() )
+    
+    local result = tr.Entity == target
+    return result
+end
+
+local function closestPlayer( tbl )
+    local closest
+    local limit = 1e24
+    for _, v in pairs( tbl ) do
+        local distance = chipOwner:getEyePos():getDistanceSqr( v:getPos() )
+        if distance < limit then
+            closest = v
+            limit = distance
+        end
+    end
+    return closest
+end
+
+local function mainlogic()
+    visiblePlayers = find.allPlayers(function( ply )
+        if ply == owner() then return end
+        if pvp.playerIsInBuild( ply ) or not ply:isAlive() then return false end
+        
+        return true --traceCheck( ply )
+    end)
+    local target = closestPlayer( visiblePlayers )
+    if not target then return end
+    aimbot( target )
+end
+
+hook.add( "Think", "aimbot", mainlogic )  

@@ -1,0 +1,52 @@
+--@name Stagger fire
+--@author Letsi & Redox
+--@server
+
+local count = 1
+local currentShot = 1
+
+local data = getUserdata() or 1
+data = tonumber( data )
+if not data then data = 1 end
+local names, types = {"Fire"}, {"Number"}
+
+for i = 1, data do
+    table.insert( names, "Entity" .. i )
+    table.insert( types, "Entity" )
+end
+count = data
+
+wire.adjustInputs( names, types )
+
+local function staggerFire( value )
+    if value <= 0.1 then return end
+    local wirelink = wire.ports["Entity" .. currentShot]:getWirelink()
+    if not isValid( wirelink ) then return end
+
+    wirelink["Fire"] = 1
+    currentShot = currentShot + 1
+
+    if currentShot == count then
+        currentShot = 1
+    end
+    timer.simple( 0, function() wirelink["Fire"] = 0 end )
+end
+
+local function addInputs( name, value )
+    if name == "Fire" then
+        return staggerFire( value )
+    end
+
+    if not isValid( value ) then return end
+    if name ~= "Entity" .. count then return end
+    
+    count = count + 1
+    
+    table.insert( names, "Entity" .. count )
+    table.insert( types, "Entity" )
+    
+    wire.adjustInputs( names, types )
+    setUserdata( tostring( count - 1 ) )
+end
+
+hook.add( "Input", "AddInputs", addInputs )

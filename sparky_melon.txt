@@ -1,0 +1,18 @@
+--@name sparky melon
+--@author Redox
+--@server
+
+timer.create( "my balls", 0.25, 300, function()
+    local melon = prop.create( chip():getPos() + Vector(0,0,50) ,Angle() , "models/props_junk/watermelon01.mdl" )
+    melon:setUnbreakable( true )
+    melon:setPhysMaterial( "gmod_bouncy" )
+    melon:setColor( Color( 255, 0, 0 ) )
+    
+    local eff = effect.create()
+    melon:addCollisionListener( function( data )
+        melon:addVelocity( data.OurNewVelocity )
+        if not effect.canCreate() then return end
+        eff:setOrigin( melon:getPos() )
+        eff:play( "BloodImpact" )
+    end)
+end)

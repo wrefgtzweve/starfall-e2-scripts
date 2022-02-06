@@ -1,0 +1,117 @@
+--@name Simon Says
+--@author Redox
+--@client
+
+local currentPlayer
+local current = 0
+local cursorPosX,cursorPosY
+local hasPerms = false
+local active = false
+local gameOrder = {}
+local colors = {
+    {color = Color(131,255,131,255),pitch = 80},
+    {color = Color(255,131,131,255),pitch = 100},
+    {color = Color(255,255,131,255),pitch = 120},
+    {color = Color(131,131,255,255),pitch = 140}
+}
+
+local function triggerSquare(inputColor)
+    inputColor.color:setA(20)
+    chip():emitSound("buttons/button17.wav",75,inputColor.pitch)
+    timer.simple(0.1,function()
+        inputColor.color:setA(255)
+    end)
+end
+
+local function getNum(lastNum)
+    local num = math.random(1,4)
+    if num == lastNum then
+        getNum(lastNum)
+    else
+        return num
+    end
+end
+
+local function showOrder()
+    local n = 1
+    local num = getNum(#gameOrder)
+    
+    table.insert(gameOrder,num)
+    timer.create("order",0.2,#gameOrder,function()
+        triggerSquare(colors[gameOrder[n]])
+        n = n + 1
+    end)
+end
+
+hook.add("starfallUsed","screenUsed",function(ply,ent)
+    if active == false then
+        currentPlayer = ply
+        active = true
+        current = 1
+        showOrder()
+        chip():emitSound("Buttons.snd9",75,100)
+        return
+    end
+    
+    if ply ~= currentPlayer or cursorPosX == nil or cursorPosY == nil then return end
+    
+    local square
+    if cursorPosX > 256 then
+        if cursorPosY > 256 then
+            square = 4
+        elseif cursorPosY < 256 then
+            square = 2
+        end
+    elseif cursorPosX < 256 then
+        if cursorPosY > 256 then
+            square = 3
+        elseif cursorPosY < 256 then
+            square = 1
+        end
+    end
+
+    if square == gameOrder[current] then
+        if current == #gameOrder then
+            showOrder()
+            current = 1
+        else
+            triggerSquare(colors[square])
+            current = current + 1
+        end
+    else
+        current = nil
+        active = false
+        table.empty(gameOrder)
+        currentPlayer = nil
+        chip():emitSound("buttons/button17.wav",75,50)
+    end
+end)
+
+hook.add("render", "screen", function()
+
+    renderEnt = render.getScreenEntity()
+    scrW, scrH = render.getResolution()
+    
+    render.setColor(Color(200,200,200))
+    render.drawRect(0, 0, 512, 512)
+    
+    render.setColor(colors[1].color)
+    render.drawRect(0, 0, 256, 256)
+    
+    render.setColor(colors[2].color)
+    render.drawRect(256, 0, 256, 256)
+    
+    render.setColor(colors[3].color)
+    render.drawRect(0, 256, 256, 256)
+    
+    render.setColor(colors[4].color)
+    render.drawRect(256, 256, 256, 256)
+    
+    cursorPosX,cursorPosY = render.cursorPos( currentPlayer )
+    
+    if cursorPosX == nil then return end
+    render.setColor(Color(0,0,0))
+    render.drawCircle(cursorPosX,cursorPosY,3)
+    
+    render.drawText(0,0,"5")
+end)

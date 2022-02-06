@@ -24,28 +24,6 @@ if CLIENT then
     
     hook.add("PlayerDisconnected","discon",Find )
     hook.add("PlayerSpawn","firstspawn",Find )
-    
---[[
-    hook.add("postdrawopaquerenderables","draw",function()
-        for N,Player in pairs(Players) do
-        
-            if Player:isValid() == false then
-                Find()
-                break
-            end
-        
-            if Player == player() then
-                continue
-            end
-            
-            local TeamColor = team.getColor(Player:getTeam())
-            
-            render.setColor(team.getColor(Player:getTeam()))
-            render.draw3DWireframeBox(Player:getPos(),Player:getAngles(),Player:obbMaxs(),Player:obbMins())
-        end
-    end)
-]]
-    
     hook.add("drawhud","draw",function()
         for N,Player in pairs(Players) do
         

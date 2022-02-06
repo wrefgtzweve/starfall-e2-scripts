@@ -9,7 +9,8 @@ local font = render.createFont( "Verdana", 16, 800, true )
 
 hook.add( "drawhud", "draw", function()
     local _, y = render.getResolution()
-    local eyeTrace = player( ):getEyeTrace()
+    local eyeTrace = player():getEyeTrace()
+    local owner
     if eyeTrace.HitWorld then return end
     local ent = eyeTrace.Entity
     
@@ -42,4 +43,19 @@ hook.add( "drawhud", "draw", function()
     render.drawText( 5, y / 2 + 65, "Material: " .. ( ent:getMaterial() and "default" ) )
     render.drawText( 5, y / 2 + 85, modelText )
     render.drawText( 5, y / 2 + 105, angleText )
+
+    render.setColor( Color( 255, 0, 0 ) )
+    local vec1 = ent:obbCenterW():toScreen()
+    local vec2 = ( ent:obbCenterW() + 10 * ent:getForward() ):toScreen()
+    render.drawLine( vec1.x, vec1.y, vec2.x, vec2.y )
+
+    render.setColor( Color( 0, 0, 255 ) )
+    local vec1 = ent:obbCenterW():toScreen()
+    local vec2 = ( ent:obbCenterW() + 10 * ent:getRight() ):toScreen()
+    render.drawLine( vec1.x, vec1.y, vec2.x, vec2.y )
+
+    render.setColor( Color( 0, 255, 0 ) )
+    local vec1 = ent:obbCenterW():toScreen()
+    local vec2 = ( ent:obbCenterW() + 10 * ent:getUp() ):toScreen()
+    render.drawLine( vec1.x, vec1.y, vec2.x, vec2.y )
 end)

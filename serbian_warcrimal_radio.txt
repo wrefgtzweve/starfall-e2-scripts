@@ -1,0 +1,75 @@
+--@name SERBIAN WARCRIMAL RADIO
+--@author Redox
+--@model models/props_lab/reciever01d.mdl
+--@shared
+
+if CLIENT then
+    local urls = {
+        "https://cdn.discordapp.com/attachments/822502262614130718/866070299749777408/My_Dad_is_a_War_Criminal.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/866071466428334090/Srpska_garda.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/866073093844107314/Oj_Alija_Aljo_-_English_Lyrics.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/866073098377101382/Roki_Vulovic_-_Panteri___Mauzer_English_Lyrics.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/866075809210826752/Miro_Semberac_-_Jadna_Bosno_suverena_TrueHD.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/866075841083605032/Yugoslav_Wars_-_Armija_Srpska.mp3",
+        "https://cdn.discordapp.com/attachments/822502262614130718/865720207465250837/Bosanska_Artiljerija.mp3"
+    }
+    local snd
+    local lastUrl = -1
+    
+    local function playSong()
+        if snd then snd:stop() end
+        local duration = net.readFloat()
+        local num = net.readFloat()
+
+        bass.loadURL( urls[num],"3d noblock noplay", function( temp )
+            snd = temp
+            snd:setPos( chip():getPos() )
+            snd:setVolume( 4 )
+            snd:setFade( 200, 600 )
+            snd:play()
+        end)
+    end
+    
+    net.receive( "slaveControl", playSong )
+    
+    hook.add( "Think", "thinkHook", function()
+        if not isValid( snd ) then return end
+        snd:setPos( chip():getPos() )
+    end)
+    
+    if player() ~= owner() then return end
+    
+    local function masterControl()
+        local urlNum
+        repeat
+            urlNum = math.random( 1, #urls )
+        until urlNum ~= lastUrl
+        
+        lastUrl = urlNum
+        
+        local soundobb
+        
+        bass.loadURL( urls[urlNum],"3d noblock noplay", function( temp )
+            soundobb = temp
+            local lenght = soundobb:getLength()
+            net.start( "masterSend" )
+            net.writeFloat( lenght )
+            net.writeFloat( urlNum )
+            net.send()
+            
+            timer.simple( lenght, masterControl )
+        end)
+    end
+    
+    masterControl()
+    
+end
+
+if SERVER then
+    net.receive( "masterSend", function()
+        net.start( "slaveControl" )
+        net.writeFloat( net.readFloat() )
+        net.writeFloat( net.readFloat() )
+        net.send()
+    end)
+end

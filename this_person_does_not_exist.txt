@@ -16,7 +16,10 @@ if CLIENT then
     local function startTimer()
         timer.create("x",2,0,function()
             pcall(function()
-                mat:setTextureURL("$basetexture","https://thisfursonadoesnotexist.com/v2/jpgs-2x/seed"..math.random(10000,99999)..".jpg",function(mat, url, width, height, layout)
+                mat:setTextureURL("$basetexture","37357.jpg
+]]
+
+i"..math.random(10000,99999)..".jpg",function(mat, url, width, height, layout)
                     layout(0,0, 1024, 1024)
                 end)
             end)

@@ -5,7 +5,7 @@
 local maxRange = 1500
 local minRange = 500
 local propTable = {
-    "models/hunter/blocks/cube025x025x025.mdl"
+    "models/hunter/blocks/cube05x05x05.mdl"
 }
 local Material = "models/debug/debugwhite"
 local propColor = Color( 0, 255, 0 )

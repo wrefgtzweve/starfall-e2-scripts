@@ -1,0 +1,257 @@
+--@name Redox's Gun game
+--@author Redox
+--@server
+
+--   /$$$$$$                                                                       
+--  /$$__  $$                                                                      
+-- | $$  \__/ /$$   /$$ /$$$$$$$         /$$$$$$   /$$$$$$  /$$$$$$/$$$$   /$$$$$$ 
+-- | $$ /$$$$| $$  | $$| $$__  $$       /$$__  $$ |____  $$| $$_  $$_  $$ /$$__  $$
+-- | $$|_  $$| $$  | $$| $$  \ $$      | $$  \ $$  /$$$$$$$| $$ \ $$ \ $$| $$$$$$$$
+-- | $$  \ $$| $$  | $$| $$  | $$      | $$  | $$ /$$__  $$| $$ | $$ | $$| $$_____/
+-- |  $$$$$$/|  $$$$$$/| $$  | $$      |  $$$$$$$|  $$$$$$$| $$ | $$ | $$|  $$$$$$$
+--  \______/  \______/ |__/  |__/       \____  $$ \_______/|__/ |__/ |__/ \_______/
+--                                      /$$  \ $$                                  
+--                                     |  $$$$$$/                                  
+--                                      \______/                                   
+-- Commands:
+--    /start : To start a new round.
+--    /stop : To stop a round.
+--    /toggle : Toggle the field showing
+--
+-- V Edit this table below to change the weapon set V
+
+--local weapons = { "weapon_pistol", "weapon_357", "weapon_ar2", "weapon_smg1", "weapon_crowbar" }
+local weapons = {"m9k_rpg7","m9k_minigun","m9k_m60","m9k_m249lmg","m9k_fg42","m9k_ak47","m9k_ak74","m9k_scar","m9k_m3","m9k_ithacam37","m9k_usas","m9k_mp5","m9k_ump45","m9k_mp40","m9k_colt1911","m9k_usp","m9k_luger","m9k_knife"}
+--local weapons = {"weapon_357",}
+--local weapons = {}
+--local weapons = {}
+
+-- Modify code below at own risk.
+
+local defaultLoadout = {"weapon_crowbar","weapon_pistol","weapon_smg1","weapon_frag","weapon_physcannon","weapon_crossbow","weapon_shotgun","weapon_357","weapon_rpg","weapon_ar2","gmod_tool","gmod_camera","weapon_physgun" }
+
+local holoColor = Color( 255, 0, 0, 50 )
+local cornerBlock1 = prop.create( chip():getPos() + Vector( 0, 0, 50 ), Angle(), "models/hunter/blocks/cube025x025x025.mdl", true )
+local cornerBlock2 = prop.create( chip():getPos() + Vector( 0, 0, 25 ), Angle(), "models/hunter/blocks/cube025x025x025.mdl", true )
+cornerBlock1:setNocollideAll( true )
+cornerBlock2:setNocollideAll( true )
+local corner1 = Vector()
+local corner2 = Vector()
+local playersInGame = {}
+
+local fieldHolo1 = holograms.create( chip():getPos(), Angle(), "models/hunter/blocks/cube025x025x025.mdl" )
+fieldHolo1:setMaterial( "models/debug/debugwhite" )
+fieldHolo1:setColor( holoColor )
+fieldHolo1:suppressEngineLighting( true )
+
+local fieldHolo2 = holograms.create( chip():getPos(), Angle(), "models/hunter/blocks/cube025x025x025.mdl" )
+fieldHolo2:setMaterial( "models/debug/debugwhite" )
+fieldHolo2:setColor( holoColor )
+fieldHolo2:suppressEngineLighting( true )
+
+local function chatPrint( ply, txt )
+    ply:chatPrint( Color( 41, 41, 41 ), "[", Color( 255, 128, 0 ), "Gungame", Color( 41, 41, 41 ), "] ", Color( 250, 250, 250 ), txt )
+end
+
+local function announceChat( txt )
+    for _, v in ipairs( find.allPlayers() ) do
+        chatPrint( v, txt )
+    end
+end
+
+local function setField()
+    if not isValid( cornerBlock1 ) or not isValid( cornerBlock2 ) then return end
+    corner1 = cornerBlock1:getPos()
+    corner2 = cornerBlock2:getPos()
+    
+    local pos = ( corner1 + corner2 ) / 2
+    local corners = corner2 - corner1
+
+    local multiplier = 10
+    if corners.z < 0 then
+        multiplier = -multiplier
+    end
+
+    local scale = corners / fieldHolo1:obbSize() + Vector( 0, 0, multiplier )
+    
+    fieldHolo1:setPos( pos )
+    fieldHolo1:setScale( Vector( math.abs( scale.x ), math.abs( scale.y ), math.abs( scale.z ) ) )
+
+    fieldHolo2:setPos( pos )
+    fieldHolo2:setScale( Vector( -math.abs( scale.x ), -math.abs( scale.y ), -math.abs( scale.z ) ) )
+end
+
+local function toggleHolo()
+    if fieldHolo then
+        fieldHolo:setColor( Color( 255, 0, 0, 0 ) )
+        timer.remove( "scanFieldSize" )
+    else
+        fieldHolo:setColor( holoColor )
+        timer.create( "scanFieldSize", 1, 0, setField )
+    end
+    fieldHolo = not fieldHolo
+end
+
+timer.create( "scanFieldSize", 1, 0, setField )
+
+local function getPlayersInField()
+    local tbl = find.inBox( corner1, corner2, function( ent )
+        if not ent:isPlayer() then return false end
+        if not ent:isInPvp() then return false end
+
+        return true
+    end )
+
+    local temp = {}
+
+    for _, v in ipairs( tbl ) do
+        temp[v] = true
+    end
+
+    return temp
+end
+
+local function giveNewWeapon( ply )
+    if not ply:isAlive() then return end
+    ply:stripWeapons()
+    ply:give( weapons[ply.gunStage] )
+end
+
+local function setPlayerWeapons( ply )
+    if not ply:isAlive() then return end
+    ply.weaponsReset = nil
+    giveNewWeapon( ply )
+end
+
+local function giveDefaultWeapons( ply )
+    if not ply:isAlive() then return end
+    ply:stripWeapons()
+    for _, wep in ipairs( defaultLoadout ) do
+        ply:give( wep )
+    end
+end
+
+local function removePlayerFromGame( ply )
+    playersInGame[ply] = nil
+
+    if ply.gunStage then
+        ply.gunStage = nil
+    end
+
+    giveDefaultWeapons( ply )
+end
+
+local function playerLeftField( ply )
+    ply.weaponsReset = true
+    giveDefaultWeapons( ply )
+end
+
+local function endRound()
+    hook.remove( "PlayerDeath", "GG_PlayerDeath" )
+    timer.remove( "checkFieldPlayers" )
+
+    for k in pairs( playersInGame ) do
+        removePlayerFromGame( k )
+    end
+end
+
+local function setWinner( ply )
+    local holo = holograms.create( ply:getPos(), Angle(), "models/props_junk/PopCan01a.mdl" )
+    holo:setColor( Color( 0, 0, 0, 0 ) )
+    holo:emitSound( "garrysmod/save_load1.wav", 75, 100 )
+    timer.simple( 1, function() holo:remove() end )
+
+    announceChat( ply:getName() .. " won!" )
+
+    endRound()
+end
+
+local function checkField()
+    local players = getPlayersInField()
+
+    -- Checks players in field
+    for ply in pairs( players ) do
+        playersInGame[ply] = true
+
+        if not ply.gunStage then
+            ply.gunStage = 1
+        end
+
+        local plyWeapons = ply:getWeapons()
+
+        if #plyWeapons ~= 1 and plyWeapons[1] ~= ply.gunStage then
+            setPlayerWeapons( ply )
+        end
+    end
+
+    -- Check if people left the field
+    for ply in pairs( playersInGame ) do
+        if not players[ply] and not ply.weaponsReset then
+            playerLeftField( ply )
+        end
+    end
+end
+
+local function announceKill( killer, dier )
+    for ply in pairs( playersInGame ) do
+        chatPrint( ply, killer:getName() .. " killed " .. dier:getName() .. " and got " .. weapons[ply.gunStage] )
+    end
+end
+
+local function countKill( dead, _, attacker )
+    if not attacker:isPlayer() then return end
+    if attacker == dead then return end
+
+    local playersInField = getPlayersInField()
+
+    if not playersInField[dead] then return end
+    if not playersInField[attacker] then
+        attacker:spawn()
+        chatPrint( attacker, "Enter the red box to participate in the gungame" )
+        return
+    end
+
+    if not attacker.gunStage then
+        attacker.gunStage = 1
+    end
+
+    attacker.gunStage = attacker.gunStage + 1
+
+    if dead.gunStage == #weapons - 1 then
+        dead.gunStage = dead.gunStage - 1
+        for ply in pairs( playersInGame ) do
+            chatPrint( ply, dead:getName() .. " lost a level at the last weapon!" )
+        end
+
+        return
+    end
+
+    if attacker.gunStage > #weapons then return setWinner( attacker ) end
+
+    timer.simple( 0, function()
+        giveNewWeapon( attacker )
+        announceKill( attacker, dead )
+    end)
+end
+
+local function startRound()
+    local players = getPlayersInField()
+
+    for ply in pairs( players ) do
+        ply:setHealth( 100 )
+    end
+
+    hook.add( "PlayerDeath", "GG_PlayerDeath", countKill )
+    timer.create( "checkFieldPlayers", 0.05, 0, checkField )
+    
+    announceChat( "Round started!" )
+end
+
+local function chatStuff( ply, text )
+    if ply ~= owner() then return end
+    if text == "/start" then startRound() return false end
+    if text == "/stop" then endRound() return false end
+    if text == "/toggle" then toggleHolo() return false end
+end
+
+hook.add( "PlayerSay", "GG_PlayerSay", chatStuff )

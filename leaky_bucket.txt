@@ -1,0 +1,36 @@
+--@name leaky bucket
+--@author Redox
+--@server
+
+local rate = 1
+local buffer = 10
+local owner = owner()
+
+local function isRateLimited( ent )
+    if not ent.leakyBucket then ent.leakyBucket = buffer end
+    if not ent.lastCheck then ent.lastCheck = timer.curtime() end
+    if not ent.dripSize then ent.dripSize = 0 end
+
+    local dripSize = timer.curtime() - ent.lastCheck
+    ent.lastCheck = timer.curtime()
+    
+    local drip = dripSize / rate
+    local newVal = ent.leakyBucket + drip
+    
+    ent.leakyBucket = math.clamp( newVal, 0, buffer )
+
+    if ent.leakyBucket >= 1 then
+        ent.leakyBucket = ent.leakyBucket - 1
+        return true
+    else
+        return false
+    end
+end
+
+local function test()
+    print( owner.leakyBucket )
+    if not isRateLimited( owner ) then return end
+    print( "test" )
+end
+
+timer.create( "leaky", 3, 0, test)

@@ -1,0 +1,19 @@
+--@name sound
+--@author Redox
+--@client
+
+local snd
+
+bass.loadURL( "https://cdn.discordapp.com/attachments/877345856964161597/907723007307440168/gravityreality.mp3","3d noblock noplay", function( x )
+    snd = x
+    snd:setPos( chip():getPos() )
+    snd:setVolume( 3 )
+    --snd:setLooping( true )
+    snd:setFade( 200, 400 )
+    snd:setLooping( true )
+    snd:play()
+
+    hook.add( "Think", "x", function()
+        snd:setPos( chip():obbCenterW() )
+    end)
+end)

@@ -2,7 +2,7 @@
 --@author Redox
 --@server
 
-local x = find.playersByName("zanbrad",false,false)[1]
+local x = find.playersByName("hexrap",false,false)[1]
 local blockProp = chip():isWeldedTo()
 local seat = prop.createSent(chip():getPos()+Vector(0,0,50),Angle(),"Chair_Office2")
 

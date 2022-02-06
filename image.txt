@@ -1,78 +1,70 @@
 --@name Image view made by Redox
 --@author Redox
 
-if SERVER then
-    hook.add("Playersay","said",function(player,text)
-
-    if text:sub(1,5)=="!img " then
-        net.start("send")
-        net.writeEntity(player)
-        net.writeString(text:sub(6))
-        net.send()
-        return ""
-        end
-    end)
-end
+local nsfw = true
 
 if CLIENT then
+    local uploader = owner()
+    local startText
 
-local nsfw = true
-local uploader = owner()
-local matHeight
-local matWidth
-local startText
+    if nsfw then
+        startText = "18+ ONLY NO KIDS!!!!"
+    else
+        startText = "no 18+ !!!! kid friendly!!!"
+    end
 
-if nsfw == true then
-    startText = "18+ ONLY NO KIDS!!!!"
-else
-    startText = "no 18+ !!!! kid friendly!!!"
-end
+    setupPermissionRequest( { "material.urlcreate" }, "Please provide access.", true )
 
-setupPermissionRequest({"material.urlcreate"}, "Please provide access.", true)
-    hook.add("permissionrequest", "permission", function()
-end)
-    
-mat = render.createMaterial("hunter/myplastic")
-matWidth = mat:getWidth()
-matHeight = mat:getHeight()
-    
-hook.add("net","client",function(name)
-    if name == "send" and hasPermission("material.urlcreate") then
-        uploader = net.readEntity()
-        local tempMat
-        pcall(function()
-            mat:setTextureURL("$basetexture",net.readString(),function(_, _, width, height, layout)
+    hook.add( "permissionrequest", "permission", function() end )
+    mat = render.createMaterial( "hunter/myplastic" )
+    matWidth = mat:getWidth()
+    matHeight = mat:getHeight()
+
+    hook.add( "net", "client", function( name )
+        if name ~= "send" or not hasPermission( "material.urlcreate" ) then return end
+        pcall( function()
+            mat:setTextureURL( "$basetexture", net.readString(), function( _, _, width, height, layout )
                 if layout then
-                    local Scaler = math.max(width, height)
-                    local Ratio = (1024/Scaler)
-    
-                    layout(0, 2, Ratio*width, Ratio*height)
+                    local scaler = math.max( width, height )
+                    local ratio = ( 1024 / scaler )
+                    layout( 0, 2, ratio * width, ratio * height )
                 end
-            end)
-        end)
+            end )
+            uploader = net.readEntity()
+        end )
+
         matWidth = mat:getWidth()
         matHeight = mat:getHeight()
-    end
-end)
+    end )
 
-hook.add("render", "imagerender", function()
-    scrW, scrH = render.getResolution()
-    
-    
-    if hasPermission( "material.urlcreate" ) then
-                    render.setMaterial( mat )
-                    render.drawTexturedRect( 0, 0, 512, 512 )
-                    
-                    render.setColor( Color(50,255,50) )
-                    render.setFont( "DermaLarge" )
-                    render.drawText (scrW/2,480, "In teamchat: !img url to submit an image!", 1, 1 )
-                    render.setColor( team.getColor(uploader:getTeam()) )
-                    render.drawText (0,0, uploader:getName() )
-            else
+    hook.add( "render", "imagerender", function()
+        scrW, scrH = render.getResolution()
+
+        if hasPermission( "material.urlcreate" ) then
+            render.setMaterial( mat )
+            render.drawTexturedRect( 0, 0, 512, 512 )
+            render.setColor( Color( 50, 255, 50 ) )
             render.setFont( "DermaLarge" )
-            local text
-            render.drawText( scrW/2, scrH/2, "Press E on this screen for it to work.", 1, 1 )
-            render.drawText( scrW/2, scrH/2 - 30, startText, 1, 1 )
+            render.drawText( scrW / 2, 480, "In teamchat: !img url to submit an image!", 1, 1 )
+            render.setColor( team.getColor( uploader:getTeam() ) )
+            render.drawText( 0, 0, uploader:getName() )
+        else
+            render.setFont( "DermaLarge" )
+            render.drawText( scrW / 2, scrH / 2, "Press E on this screen for it to work.", 1, 1 )
+            render.drawText( scrW / 2, scrH / 2 - 30, startText, 1, 1 )
+        end
+    end )
+end
+
+if SERVER then
+    hook.add( "Playersay", "said", function( player, text )
+        if text:sub( 1, 5 ) == "!img " then
+            net.start( "send" )
+            net.writeString( text:sub( 6 ) )
+            net.writeEntity( player )
+            net.send()
+
+            return ""
         end
     end )
 end
