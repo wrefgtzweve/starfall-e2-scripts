@@ -2,41 +2,40 @@
 --@author Redox
 --@server
 
-if SERVER then
-
-    Cars = {
+local cars = {
     "models/props_vehicles/car002a_physics.mdl",
     "models/props_vehicles/car003a_physics.mdl",
     "models/props_vehicles/car004a_physics.mdl",
     "models/props_vehicles/car005a_physics.mdl"
-    }
+}
 
-    function spawn ()
-        if prop.canSpawn() and owner():isAlive() then
-            pcall(function()
-                local Prop = prop.create(owner():getPos()+Vector(0,0,200), owner():getEyeAngles(),Cars[math.random(1,table.count(Cars))],false)
-                Prop:setMass(10000)
-                Prop:applyForceCenter(owner():getAimVector() * 100000000)
-                Prop:emitSound("ambient/machines/usetoilet_flush1.wav",100,math.random(50,150))
-                Prop:setCollisionGroup( 9 )
-                timer.simple(10,function()
-                    if isValid(Prop) then
-                        Prop:breakEnt()
-                    end
-                end)
-            end)
-        end
+local function spawn ()
+    if prop.canSpawn() and owner():isAlive() then
+        pcall( function()
+            local Prop = prop.create(owner():getPos() + Vector( 0, 0, 200 ), owner():getEyeAngles(), cars[math.random( 1, table.count( cars ) )], false )
+            Prop:setMass( 10000 )
+            Prop:applyForceCenter( owner():getAimVector() * 100000000 )
+            Prop:emitSound( "ambient/machines/usetoilet_flush1.wav", 100, math.random( 50 ,150 ) )
+            Prop:setCollisionGroup( 9 )
+
+            timer.simple( 10, function()
+                if isValid( Prop ) then
+                    Prop:breakEnt()
+                end
+            end )
+        end )
     end
-
-    hook.add("KeyPress","",function(ply, key)
-        if ply == owner() and key == 2048 then
-            timer.create("spawn",0.1,0,spawn)
-        end
-    end)
-    
-    hook.add("KeyRelease","",function(ply, key)
-        if ply == owner() and key == 2048 then
-            timer.stop("spawn")
-        end
-    end)
 end
+
+hook.add("KeyPress","",function( ply, key )
+    if ply == owner() and key == 2048 then
+        timer.create( "spawn", 0.1, 0, spawn )
+    end
+end)
+
+hook.add("KeyRelease","",function( ply, key )
+    if ply == owner() and key == 2048 then
+        timer.stop( "spawn" )
+    end
+end)
+
