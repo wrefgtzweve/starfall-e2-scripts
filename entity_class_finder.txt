@@ -1,39 +1,53 @@
 --@name entity class finder
 --@author Redox
---@client
+--@shared
 
 if player() == owner() then
     enableHud( owner(), true )
 end
 
-local entities = {}
+if SERVER then
+    local function Find()
+        local data = {}
+        local ents = find.byClass( "*npc*" )
+        for _, ent in ipairs( ents ) do
+            table.insert( data, { 
+                pos = ent:getPos(),
+                owner = isValid( ent:getOwner() ) and ent:getOwner():getName() or "World",
+                name = ent:getClass()
+            } )
+        end
 
-local scrW, scrH = render.getResolution()
+        net.start( "ents" )
+        net.writeTable( data )
+        net.send()
+    end
 
-function Find() 
-    entities = {}
-    -- gmod_wire_egp_hud
-    table.add( entities, find.byClass( "*holo*" ) )
+    timer.create( "findTimer", 3, 0, function()
+        Find()
+    end)
 end
 
-timer.create( "findTimer", 2, 0, function()
-    Find()
-end)
+if CLIENT then
 
-Find()
-print( #entities )
+local ents = {}
+local scrW, scrH = render.getResolution()
+
+net.receive( "ents", function()
+    ents = net.readTable()
+end )
 
 hook.add("drawhud","draw",function()
-    for _, chip in pairs( entities ) do
+    for _, ent in ipairs( ents ) do
     
-        if not isValid( chip ) then return end
-        
-        local dis = chip:getPos():getDistanceSqr( chip:getPos() )
-        local cords = chip:getPos():toScreen()
+        local pos = ent.pos
+        local owner = ent.owner
+        local name = ent.name
+        local cords = pos:toScreen()
         
         render.setColor( Color( 255, 0, 0 ) )
-        
-        local text = chip:getClass()--chip:getChipName() or "Ent"
-        render.drawText( cords.x, cords.y, text, 1 )
+        render.drawText( cords.x, cords.y + 20 , name .. " | " .. owner, 1 )
     end
 end)
+
+end
