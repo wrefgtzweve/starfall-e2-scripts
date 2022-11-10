@@ -1,0 +1,65 @@
+@name watermelone
+@model models/props_junk/watermelon01.mdl
+@persist On Rape T:entity
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(50)
+runOnChat(1)
+
+E = entity()
+O = owner()
+
+C = O:lastSaid():explode(" ")
+
+if(first()){
+    entity():setColor(255,255,255)
+    T = owner()
+    E:setMass(1000)
+    On = 1
+    Rape = 0
+    }
+
+if(C[1,string] == ".follow" & chatClk(O)){
+    hideChat(1)
+    entity():setColor(255,255,255)
+    T = findPlayerByName(C[2,string])
+    print(T)
+    E:setMass(1000)
+    On = 1
+    Rape = 0
+    }
+    
+if(C[1,string] == ".rape" & chatClk(O)){
+    hideChat(1)
+    entity():setColor(255,0,0)
+    T = findPlayerByName(C[2,string])
+    print(T)
+    E:setMass(10000)
+    Rape = 1
+    On = 0
+    }
+    
+    
+if(Rape==1){
+    soundPlay(1,1,"Watermelon.Impact")
+    P = (T:pos() - E:pos())*100000000
+    applyForce(P)
+    }
+    
+if(C[1,string] == ".stop" & chatClk(O)){
+    T = owner()
+    hideChat(1)
+    entity():setColor(255,255,255)
+    On = 1
+    Rape = 0
+    }
+    
+if(On==1){
+    #oundPlay(1,1,"Watermelon.Impact")
+    P = (T:pos() - E:pos())*30
+    applyForce(P)
+    }
+

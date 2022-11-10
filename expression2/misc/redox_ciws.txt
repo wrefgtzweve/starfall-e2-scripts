@@ -1,0 +1,224 @@
+@name Redox CIWS
+@persist T:array Active:number [Turret1,Turret2,Turret3,Turret4]:wirelink Target:entity O:entity C:array Armed:number Manual:number
+@model models/hunter/plates/plate05x05.mdl
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(10)
+runOnChat(1)
+
+C = owner():lastSaid():explode(" ")
+
+if(first())
+{   
+    O = owner()
+    
+    holoCreate(1)
+    holoPos(1,entity():pos()+vec(0,0,40))
+    holoParent(1,entity())
+    holoAlpha(1,0)
+    holoShadow(1,0)
+    
+    holoCreate(2,holoEntity(1):pos()+vec(0,0,-30),vec(4,4,2),holoEntity(1):angles()+ang(0,0,0),vec(86,86,86),"hq_cylinder")
+    holoParent(2,entity())
+    
+    holoCreate(3,holoEntity(2):pos()+vec(0,0,15),vec(1.5,1.5,1),holoEntity(1):angles()+ang(0,0,0),vec(255,255,255),"hq_cubinder")
+    holoParent(3,holoEntity(2))
+    holoColor(3,vec(85,85,85))
+    
+    holoCreate(4,holoEntity(2):pos()+vec(0,0,25),vec(1,1,1),holoEntity(1):angles()+ang(0,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(4,holoEntity(2))
+    holoColor(4,vec(85,85,85))
+    
+    holoCreate(5,holoEntity(2):pos()+vec(0,0,27),vec(1.5,1.5,1),holoEntity(1):angles()+ang(0,0,0),vec(255,255,255),"hq_cone")
+    holoParent(5,holoEntity(2))
+    holoColor(5,vec(85,85,85))
+    
+    holoCreate(105,holoEntity(2):pos()+vec(0,0,31),vec(1,1,1.5),holoEntity(1):angles()+ang(0,0,90),vec(255,255,255),"hq_cylinder")
+    holoParent(105,holoEntity(2))
+    holoColor(105,vec(85,85,85))
+    holoShadow(105,0)
+    
+    holoCreate(106,holoEntity(2):pos()+vec(0,0,31),vec(0.7,0.7,3),holoEntity(1):angles()+ang(0,0,90),vec(255,255,255),"hq_cylinder")
+    holoParent(106,holoEntity(105))
+    holoColor(106,vec(85,85,85))
+    
+    holoCreate(107,holoEntity(2):pos()+vec(0,15,31),vec(1,1,1),holoEntity(1):angles()+ang(0,0,270),vec(255,255,255),"hq_cone")
+    holoParent(107,holoEntity(105))
+    holoColor(107,vec(85,85,85))
+    
+    holoCreate(108,holoEntity(2):pos()+vec(0,-15,31),vec(1,1,1),holoEntity(1):angles()+ang(0,0,90),vec(255,255,255),"hq_cone")
+    holoParent(108,holoEntity(105))
+    holoColor(108,vec(85,85,85))
+    
+    holoCreate(109,holoEntity(2):pos()+vec(0,-20,31),vec(2,1,2),holoEntity(1):angles()+ang(0,0,0),vec(255,255,255),"rcube")
+    holoParent(109,holoEntity(105))
+    holoColor(109,vec(51,51,51))
+
+    holoCreate(110,holoEntity(2):pos()+vec(0,20,31),vec(2,1,2),holoEntity(1):angles()+ang(0,0,0),vec(255,255,255),"rcube")
+    holoParent(110,holoEntity(105))
+    holoColor(110,vec(51,51,51))
+    
+    holoCreate(111,holoEntity(2):pos()+vec(15,20,36),vec(0.3,0.3,4),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(111,holoEntity(105))
+    holoColor(111,vec(85,85,85))
+    
+    holoCreate(112,holoEntity(2):pos()+vec(15,20,26),vec(0.3,0.3,4),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(112,holoEntity(105))
+    holoColor(112,vec(85,85,85))
+    
+    holoCreate(113,holoEntity(2):pos()+vec(15,-20,36),vec(0.3,0.3,4),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(113,holoEntity(105))
+    holoColor(113,vec(85,85,85))
+    
+    holoCreate(114,holoEntity(2):pos()+vec(15,-20,26),vec(0.3,0.3,4),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(114,holoEntity(105))
+    holoColor(114,vec(85,85,85))
+    
+    holoCreate(115,holoEntity(2):pos()+vec(15,20,36),vec(0.4,0.4,1),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cubinder")
+    holoParent(115,holoEntity(105))
+    holoColor(115,vec(51,51,51))
+    
+    holoCreate(116,holoEntity(2):pos()+vec(15,20,26),vec(0.4,0.4,1),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cubinder")
+    holoParent(116,holoEntity(105))
+    holoColor(116,vec(51,51,51))
+    
+    holoCreate(117,holoEntity(2):pos()+vec(15,-20,36),vec(0.4,0.4,1),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cubinder")
+    holoParent(117,holoEntity(105))
+    holoColor(117,vec(51,51,51))
+    
+    holoCreate(118,holoEntity(2):pos()+vec(15,-20,26),vec(0.4,0.4,1),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cubinder")
+    holoParent(118,holoEntity(105))
+    holoColor(118,vec(51,51,51))
+    
+    holoCreate(119,holoEntity(2):pos()+vec(40,20,36),vec(0.4,0.4,0.8),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(119,holoEntity(105))
+    holoColor(119,vec(51,51,51))
+    
+    holoCreate(120,holoEntity(2):pos()+vec(40,20,26),vec(0.4,0.4,0.8),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(120,holoEntity(105))
+    holoColor(120,vec(51,51,51))
+    
+    holoCreate(121,holoEntity(2):pos()+vec(40,-20,36),vec(0.4,0.4,0.8),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(121,holoEntity(105))
+    holoColor(121,vec(51,51,51))
+    
+    holoCreate(122,holoEntity(2):pos()+vec(40,-20,26),vec(0.4,0.4,0.8),holoEntity(1):angles()+ang(90,0,0),vec(255,255,255),"hq_cylinder")
+    holoParent(122,holoEntity(105))
+    holoColor(122,vec(51,51,51))
+
+
+    holoCreate(201)
+    holoCreate(202)
+    holoCreate(203)
+    holoCreate(204)
+    
+    holoAlpha(201,0)
+    holoAlpha(202,0)
+    holoAlpha(203,0)
+    holoAlpha(204,0)
+    
+    findIncludePlayerProps(O)
+    findByClass("gmod_wire_turret")
+    if(findToArray():count()!=4)
+    {
+        print(_HUD_PRINTCENTER,"Please spawn 4 wire turrets before you spawn the E2 chip.")
+    }
+    T = findToArray()
+    
+    for(I=1,4)
+    {
+        T[I,entity]:setAlpha(0)
+        T[I,entity]:setAng(ang(180,0,0))
+        holoPos(200+I,T[I,entity]:pos())
+        T[I,entity]:parentTo(holoEntity(200+I))
+        holoAng(200+I,ang(90,0,0))
+    }
+    
+    holoPos(201,holoEntity(1):pos()+vec(34,-21,5))
+    holoPos(202,holoEntity(1):pos()+vec(34,-21,-5))
+    holoPos(203,holoEntity(1):pos()+vec(34,19,5))
+    holoPos(204,holoEntity(1):pos()+vec(34,19,-5))
+    
+    Turret1 = T[1,entity]:wirelink()
+    Turret2 = T[2,entity]:wirelink()
+    Turret3 = T[3,entity]:wirelink()
+    Turret4 = T[4,entity]:wirelink()
+    
+    
+    timer("parent",100)
+}
+
+if(clk("parent"))
+{
+    for(I=0,4)
+    {
+        T[I,entity]:parentTo(holoEntity(1))
+    }
+    
+    Active = 1
+}
+
+if(Active==1)
+{   
+    if(C[1,string] == ".t" & chatClk(O))
+    {
+        hideChat(1)
+        Target = findPlayerByName(C[2,string])
+        Armed = 1
+        print(_HUD_PRINTCENTER,"Target "+Target:name()+" acquired.")
+    }
+    
+    if(C[1,string] == ".m" & chatClk(O))
+    {
+        hideChat(1)
+        Manual=1
+    }
+    
+    if(C[1,string] == ".stop" & chatClk(O))
+    {
+        hideChat(1)
+        Armed=0
+        Manual=0
+    }
+    
+    if(Target & Armed==1)
+    {   
+        Ang = ((Target:pos()-holoEntity(1):pos()):toAngle())
+        holoAng(1,Ang)
+        holoAng(2,ang(0,Ang:yaw(),0))
+        holoAng(105,ang(Ang:pitch(),Ang:yaw(),90))
+    }
+    if(Manual==1)
+    {   
+        Ang = ((owner():aimPos()-holoEntity(1):pos()):toAngle())
+        holoAng(1,Ang)
+        holoAng(2,ang(0,Ang:yaw(),0))
+        holoAng(105,ang(Ang:pitch(),Ang:yaw(),90))
+    }
+}
+
+if(Armed==1)
+{
+    Turret1["Fire",number] = 1
+    Turret2["Fire",number] = 1
+    Turret3["Fire",number] = 1
+    Turret4["Fire",number] = 1
+}
+elseif(Manual==1 & O:keyAttack2() & owner():weapon("gmod_camera"):isPlayerHolding() == 1)
+{
+    Turret1["Fire",number] = 1
+    Turret2["Fire",number] = 1
+    Turret3["Fire",number] = 1
+    Turret4["Fire",number] = 1 
+}
+else
+{
+    Turret1["Fire",number] = 0
+    Turret2["Fire",number] = 0
+    Turret3["Fire",number] = 0
+    Turret4["Fire",number] = 0
+}
+

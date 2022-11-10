@@ -1,0 +1,17 @@
+@name
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+Effect = effect()
+Effect:setScale(0.1)
+Effect:setMagnitude(1)
+Effect:setRadius(1)
+Effect:setOrigin(entity():pos())
+Effect:play("m9k_gdcw_tpaboom")
+
+# change this value to repeat 1 = 1ms so 1000 = 1 second.
+# remove it to stop it from looping
+interval(1)
+#selfDestruct()

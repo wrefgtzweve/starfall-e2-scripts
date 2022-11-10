@@ -1,0 +1,48 @@
+@name Redox EGP/E2 finder
+@inputs ENT:entity
+@persist EGP:wirelink
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+    runOnPlayerConnect(1)
+    runOnPlayerDisconnect(1)
+
+if(first())
+{
+    findIncludePlayerProps(owner())
+    runOnSpawn(1)
+    findByClass("gmod_wire_egp_hud")
+    EGP = find():wirelink()
+    if(!EGP)
+    {
+        print(_HUD_PRINTCENTER,"Please place an EGP before you place the E2.")
+        selfDestruct()
+    }
+}
+
+EGP:egpClear()
+
+foreach(N,Player:entity=players())
+{
+    if(Player:owner())
+    {
+        continue
+    }
+    Color = teamColor(Player:team())
+    EGP:egp3DTracker(N,vec(0,0,Player:height()/2))
+    EGP:egpParent(N,Player)
+    
+    EGP:egpText(N+players():count()*1,Player:name(),vec2(-Player:name():length()*4,0))
+    EGP:egpColor(N+players():count()*1,Color)
+    EGP:egpParent(N+players():count()*1,N)
+    
+    EGP:egpCircle(N+players():count()*3,vec2(Player:name():length()*4,-10),vec2(8,8))
+    EGP:egpColor(N+players():count()*3,Color)
+    EGP:egpParent(N+players():count()*3,N+players():count()*1)
+}
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#

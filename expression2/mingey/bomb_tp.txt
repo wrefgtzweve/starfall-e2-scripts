@@ -1,0 +1,31 @@
+@name bomb tp
+@persist BombW:wirelink Toggle:number
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+if( first() ){
+    holoCreate(1)
+    holoVisible(1,players(),0)
+    entity():setColor(vec(0,0,0),0)
+    Bomb = entity():isWeldedTo()
+    BombW = Bomb:wirelink()
+    Bomb:parentTo(holoEntity(1))
+    Toggle = 0
+}
+
+interval( 250 )
+
+BombW["Detonate",number] = 0
+local Players = players()
+local Target = Players[randint(1,Players:count()),entity]
+
+if( Target != owner() && Target:isAlive() && Toggle == 0 ){
+    holoPos(1, Target:pos()+vec(0,0,30))
+    BombW["Detonate",number] = 1
+    Toggle = 1
+}else{
+    holoPos(1, Target:pos()+vec(0,0,30))
+    Toggle = 0
+}

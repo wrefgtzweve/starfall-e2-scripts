@@ -1,0 +1,100 @@
+@name turret
+@persist Turret:entity X:number TW:wirelink Target:array
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(50)
+runOnChat(1)
+
+if(first() | duped())
+{
+    X = 0
+    holoCreate(1)
+    holoPos(1,entity():pos()+vec(0,0,20))
+    holoAlpha(1,0)
+    holoParent(1,entity())
+    
+    holoCreate(2)
+    holoModel(2,"hq_sphere")
+    holoScale(2,vec(-50,-50,-50))
+    holoAlpha(2,32)
+    holoColor(2,vec(0,255,0))
+    holoParent(2,entity())
+    holoVisible(2,players(),0)
+    
+    holoCreate(3)
+    holoModel(3,"hq_sphere")
+    holoScale(3,vec(-50,-50,-50))
+    holoAlpha(3,32)
+    holoColor(3,vec(0,255,0))
+    holoParent(3,entity())
+    holoVisible(3,players(),0)
+}
+
+if(owner():lastSaid()==".show" & chatClk(owner()))
+{
+    hideChat(1)
+    holoVisible(3,players(),1)
+    holoVisible(2,players(),1)
+}
+
+if(owner():lastSaid()==".hide" & chatClk(owner()))
+{
+    hideChat(1)
+    holoVisible(3,players(),0)
+    holoVisible(2,players(),0)
+}
+
+if(X==0)
+{
+    findIncludePlayerProps(owner())
+    findByClass("gmod_wire_turret")
+    findClearWhiteList()
+    A = findToArray()
+    foreach(N,T:entity=A)
+    {
+        if(T:getColor()==vec(255,255,255))
+        {
+            Turret=T
+            break
+        }
+    }
+}
+    
+if(Turret & X==0)
+{
+    TW = Turret:wirelink()
+    Turret:setColor(vec(250,250,250),255)
+    holoPos(1,Turret:pos())
+    holoAng(1,Turret:angles())
+    Turret:parentTo(holoEntity(1))
+    holoPos(1,entity():pos()+vec(0,0,50))
+    X=1
+}
+
+if(X==1)
+{
+    findExcludePlayer(owner())
+    findIncludeEntities(getPvpers())
+    findExcludeEntities(getBuilders())
+    findInSphere(entity():pos(),300)
+    findSortByDistance(entity():pos())
+    Target = findToArray()
+}
+
+if(Target[1,entity]&Target[1,entity]:isAlive()&!Target[1,entity]:isCrouch())
+{
+TW["Fire",number] = 1
+holoAng(1,((Target[1,entity]:pos()+vec(0,0,55))-Turret:pos()):toAngle())
+}
+elseif(Target[1,entity]&Target[1,entity]:isAlive()&Target[1,entity]:isCrouch())
+{
+TW["Fire",number] = 1 
+holoAng(1,((Target[1,entity]:pos()+vec(0,0,20))-Turret:pos()):toAngle())
+}
+else
+{
+    TW["Fire",number] = 0
+}

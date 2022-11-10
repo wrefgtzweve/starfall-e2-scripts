@@ -1,0 +1,43 @@
+@name Redox radio
+@model models/props_lab/citizenradio.mdl
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+runOnChat(1)
+
+O = owner()
+C = O:lastSaid():explode(" ")
+
+if(C[1,string] == ".play" & chatClk(O))
+{
+    hideChat(1)
+    entity():streamStart(1,C[2,string])
+}
+
+if(C[1,string] == ".playme" & chatClk(O))
+{
+    hideChat(1)
+    owner():streamStart(1,C[2,string])
+}
+
+if(C[1,string] == ".stop" & chatClk(O))
+{
+    hideChat(1)
+    streamStop(1)
+}
+
+if(C[1,string] == ".playon" & chatClk(O))
+{
+    hideChat(1)
+    P = findPlayerByName(C[2,string])
+    
+    print(P:getName())
+    
+    holoCreate(1)
+    holoAlpha(1,0)
+    holoPos(1,P:pos())
+    holoParent(1,P)
+    
+    holoEntity(1):streamStart(1,C[3,string])
+}

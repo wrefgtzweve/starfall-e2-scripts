@@ -1,0 +1,95 @@
+@name E2 list
+@persist EGP:wirelink EGPstar:wirelink E2:array X:number Old:array Oldstar:array EGPcount:number
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+if(first()|dupefinished()|duped()){
+    
+    findByClass("gmod_wire_egp")
+    findSortByDistance(entity():pos())
+    EGPs = findToArray()
+    EGPcount = EGPs:count()
+    if(EGPcount==0){
+        hint("Please place an EGP screen for this E2 to work.",5)
+        print("Please place an EGP screen for this E2 to work.")
+        selfDestruct()
+        }
+    elseif(EGPcount==1){
+        hint("Place another screen to list all starfall chips aswell. (optional)",5)
+        print("Place another screen to list all starfall chips aswell. (optional)")
+        }
+    EGP = EGPs[1,entity]:wirelink()
+    EGPstar = EGPs[2,entity]:wirelink()
+    
+    EGP:egpClear()
+    
+    EGP:egpLine(99,vec2(0,20),vec2(512,20))
+    EGP:egpLine(98,vec2(140,20),vec2(140,512))
+    EGP:egpLine(97,vec2(440,20),vec2(440,512))
+    EGP:egpText(96,"Owner:",vec2(0,0))
+    EGP:egpText(95,"E2:",vec2(150,0))
+    EGP:egpText(94,"Ops:",vec2(450,0))
+    
+    EGPstar:egpClear()
+    EGPstar:egpLine(89,vec2(0,20),vec2(512,20))
+    EGPstar:egpLine(88,vec2(140,20),vec2(140,512))
+    EGPstar:egpText(86,"Owner:",vec2(0,0))
+    EGPstar:egpText(85,"Starfall:",vec2(150,0))
+}
+
+interval(1000)
+X=25
+Y=25
+findByClass("gmod_wire_expression2")
+E2 = findToArray()
+
+if(E2:count()==Old:count()){
+    foreach(N,E2:entity=E2){
+        EGP:egpText(1000+N,floor((E2:cpuUsage()*1000000)):toString(),vec2(450,X))
+        X+=20
+    }
+}else{
+    EGP:egpClear()
+    foreach(N,E2:entity=E2){
+        Color = teamColor(E2:owner():team())
+        EGP:egpText(N,E2:owner():name(),vec2(0,X))
+        EGP:egpColor(N,Color)
+        EGP:egpText(100+N,E2:getName(),vec2(150,X))
+        EGP:egpText(1000+N,floor((E2:cpuUsage()*1000000)):toString(),vec2(450,X))
+        X+=20
+        }
+    EGP:egpLine(99,vec2(0,20),vec2(512,20))
+    EGP:egpLine(98,vec2(140,20),vec2(140,512))
+    EGP:egpLine(97,vec2(440,20),vec2(440,512))
+    EGP:egpText(96,"Owner:",vec2(0,0))
+    EGP:egpText(95,"E2:",vec2(150,0))
+    EGP:egpText(94,"Cpus:",vec2(450,0))
+}
+Old=E2
+
+if(EGPcount==1){
+    findByClass("starfall_processor")
+    Star = findToArray()
+    
+    if(Star:count()!=Oldstar:count() | clk("null")){
+            EGPstar:egpClear()
+            foreach(N,Star:entity=Star){
+                if(Star:getName()==""){
+                    timer("null",500)
+                    }
+                Color = teamColor(Star:owner():team())
+                EGPstar:egpText(N,Star:owner():name(),vec2(0,Y))
+                EGPstar:egpText(150+N,Star:getName(),vec2(150,Y))
+                EGPstar:egpColor(N,Color)
+                Y+=20
+                }
+            EGPstar:egpLine(89,vec2(0,20),vec2(512,20))
+            EGPstar:egpLine(88,vec2(140,20),vec2(140,512))
+            EGPstar:egpText(86,"Owner:",vec2(0,0))
+            EGPstar:egpText(85,"Starfall:",vec2(150,0))
+        }
+        
+    Oldstar=Star
+}

@@ -1,0 +1,64 @@
+@name Cam tool
+@persist X T:entity Cam:wirelink
+
+runOnChat(1)
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+O = owner()
+C = O:lastSaid():explode(" ")
+if(first())
+{
+    print("Made by Redox")
+    print("Make sure to spawn the chip on a wire cam controller")
+    print("")
+    print("Commands:")
+    print(".on | .off")
+    print(".goto NAME, to teleport the camera to a player")
+    print(".flir to turn flir on and off")
+    print(".creep to make noises around the camera")
+    Cam = entity():isWeldedTo():wirelink()
+}
+
+if(C[1,string] == ".on" & chatClk(O))
+{
+    hideChat(1)
+    Cam["Activated",number] = 1
+    On = 1
+}
+
+if(C[1,string] == ".off" & chatClk(O))
+{
+    hideChat(1)
+    Cam["Activated",number] = 0
+    On = 0
+}
+
+if(C[1,string] == ".flir" & chatClk(O) & C[2,string] == "on")
+{
+    hideChat(1)
+    Cam["FLIR",number] = 1
+}
+
+if(C[1,string] == ".flir" & chatClk(O) & C[2,string] == "off")
+{
+    hideChat(1)
+    Cam["FLIR",number] = 0
+}
+
+if(C[1,string] == ".goto" & chatClk(O))
+{
+    hideChat(1)
+    T = findPlayerByName(C[2,string])
+    Cam["Position",vector] = T:pos()+vec(0,50,80)
+    Cam["Parent",entity] = T
+}
+
+if(C[1,string] == ".creep" & chatClk(O))
+{
+    hideChat(1)
+    T:soundPlay(1,5,"NPC_PoisonZombie.FastBreath")
+    soundPitch(1,150)
+}

@@ -1,0 +1,13 @@
+@name cpu optimised e2 chip
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(90)
+while(perf())
+{
+    holoCreate(1)
+    holoModel(1,"models/props_c17/lampShade001a.mdl")
+    holoModel(1,"models/props_junk/watermelon01.mdl")
+}

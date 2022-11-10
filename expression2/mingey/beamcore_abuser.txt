@@ -1,0 +1,20 @@
+@name beamcore abuser
+@persist X
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+E = entity():pos()
+if( X < 500){
+    interval(300)
+}
+
+
+beamMaterial(1,"refract_ring")
+beamSize(100)
+
+for( I = 1 , 100 ){
+    X = X + 1
+    beamPoint( X, E + randvec(-300,300) )
+}

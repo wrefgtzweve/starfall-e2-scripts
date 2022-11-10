@@ -1,0 +1,74 @@
+@name Redox TTS
+@persist Voice:string O:entity CustomText:string
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+# Voices
+#https://cloud.ibm.com/docs/text-to-speech?topic=text-to-speech-voices
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+runOnChat(1)
+
+if(first())
+{
+    Voice = "en-US_EmilyV3Voice"
+    O = owner()
+    holoCreate(1)
+    holoAlpha(1,0)
+    holoPos(1,O:pos())
+    holoParent(1,O)
+}
+
+C = O:lastSaid():explode(" ")
+L = O:lastSaid():explode("")
+
+if(chatClk(O) & !(L[1,string]=="."))
+{
+    Message = ""
+    #Pre = O:lastSaid():replace(".tts","")
+    Message = O:lastSaid():replace(" ","+")
+    holoEntity(1):streamStart(1,"https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text="+Message+"&voice="+Voice+"&download=true&accept=audio%2Fmp3")
+}
+
+if(C[1,string] == ".voice" & chatClk(O))
+{
+    hideChat(1)
+    Voice = C[2,string]
+    print("Voice loaded: "+Voice)
+}
+    
+if(C[1,string] == ".set" & chatClk(O))
+{
+    hideChat(1)
+    O = findPlayerByName(C[2,string])
+    holoPos(1,O:pos())
+    holoParent(1,O)
+    print("New owner set: "+O:name())
+}
+
+if(C[1,string] == ".navyseal" & chatClk(O))
+{
+    hideChat(1)
+    CustomText = "What the fuck did you just fucking say about me, you little bitch? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little clever comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn't, you didn't, and now you're paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You're fucking dead, kiddo."
+    Voice= "en-US_KevinV3Voice"
+    Message = CustomText:replace(" ","+")
+    holoEntity(1):streamStart(1,"https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text="+Message+"&voice="+Voice+"&download=true&accept=audio%2Fmp3")
+}
+
+if(C[1,string] == ".opinion" & chatClk(O))
+{
+    hideChat(1)
+    CustomText = "Nice opinion. Just one tiny problem with it. Inspecting your message, it looks like your opinion is different from mine.
+
+Let me tell you something.
+
+I am the baseline for opinions, any opinion I hold is objectively correct and, as a result, any other opinions are wrong. And guess what? You happen to hold a wrong one. And I hope you know that your opinion is now illegal. I have now contacted the FBI, the CIA, the NSA, the Navy SEALs, the Secret Service and your mom. You'll rot in prison for the rest of your life over this, mark my words you'll be sorry you ever shared your opinions. By the time you're reading this, you're done for boy. Nature will punish you. Humanity will punish you. Supernatural beings will punish you. Space will punish you. Oh yeah, and we decided that just to make sure we'll nuke your house from orbit so there's no chance you can run away and everyone you know will die. It's a small price to pay for ethnic cleansing. May this post be a warning for anyone else brave enough to share an incorrect opinion; you've been warned."  
+    Voice= "en-US_EmilyV3Voice"
+    Message = CustomText:replace(" ","+")
+    holoEntity(1):streamStart(1,"https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text="+Message+"&voice="+Voice+"&download=true&accept=audio%2Fmp3")
+}

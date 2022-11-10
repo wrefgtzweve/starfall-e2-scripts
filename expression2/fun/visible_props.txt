@@ -1,0 +1,15 @@
+@name Visible props
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+#findIncludePlayerProps(owner())
+
+findByClass( "prop_physics" )
+foreach( N, Food:entity=findToArray() )
+{
+    Model = Food:model()
+    holoCreate( N, Food:pos(), vec(0.9,0.9,0.9), Food:angles(), vec(255,255,255), Model )
+    holoAlpha( N, 255 )
+    holoMaterial( N, "debug/debugportals" )
+    holoParent( N, Food )
+}

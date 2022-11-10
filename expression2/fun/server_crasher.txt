@@ -1,0 +1,21 @@
+@name server crasher
+@persist Name:string Time:number
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+if(first()){
+    timer("balls",1000)
+    Name = "server crasher, time left: "
+    Time = 30
+}
+if(clk("balls")){
+    Time = Time - 1
+    setName( Name + Time )
+    if(Time==0){
+        entity():soundPlay(1,10,"hahayoufool.wav")
+    }else{
+        timer("balls",1000)
+    }
+}

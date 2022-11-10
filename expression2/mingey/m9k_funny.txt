@@ -1,0 +1,11 @@
+@name 
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+runOnTick(1)
+
+Effect = effect()
+Effect:setOrigin(entity():pos())
+Effect:setScale(1)
+Effect:play("m9k_nuke_blastwave")
+selfDestruct()

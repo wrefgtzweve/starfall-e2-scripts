@@ -1,0 +1,15 @@
+@name Ball speeder
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+runOnTick(1)
+
+findByClass( "prop_combine_ball" )
+local Balls = findToArray()
+
+foreach(N,Ball:entity=Balls){
+    if( Ball:owner() != owner() ){ continue }
+    Ball:propSetVelocity( Ball:vel() * 1000 )
+}

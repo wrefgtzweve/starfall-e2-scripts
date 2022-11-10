@@ -1,0 +1,15 @@
+@name pvp fun increaser
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(3000)
+
+foreach( I,Player:entity = players())
+{
+    if(Player:isAlive())
+    {
+        Prop = propSpawn("models/props_phx/mk-82.mdl",Player:pos(),0)
+        Prop:ignite()
+    }
+}

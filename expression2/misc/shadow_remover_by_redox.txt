@@ -1,0 +1,51 @@
+@name Shadow remover by Redox
+@inputs 
+@outputs 
+@persist Pent:array Scan:number Ptot:number Broken:number Chunk:number LoopPos:number
+@trigger 
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+if(first() | dupefinished())
+{
+    LoopPos=0
+    Chunk=50
+    Scan=0
+    propSpawnUndo(1)
+    findIncludePlayerProps(owner())
+    findByClass("prop_physics")
+    findSortByDistance(entity():pos())
+    Pent = findToArray()
+    Ptot = Pent:count()
+    print(Ptot+" Props scanned, processing now")
+    timer("chunk",1)
+}
+
+if(clk("chunk"))
+{
+    print(_HUD_PRINTCENTER,"Processing: "+floor((LoopPos/Ptot)*100)+"%")
+    for(I=LoopPos,Chunk)
+    {
+        Pent[I,entity]:propShadow(0)
+        
+        if(I==Chunk)
+        {
+            LoopPos+=50
+            Chunk+=50
+            timer("chunk",500)
+            break
+        }
+        if(I == Ptot)
+        {
+            print(_HUD_PRINTCENTER,"Processing: "+100+"%")
+            stoptimer("chunk")
+            LoopPos=0
+            Chunk=50
+            Scan=1
+            print("Shadows removed, enjoy your shadowless props!")
+            break
+        }
+    }
+}

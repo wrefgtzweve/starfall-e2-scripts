@@ -1,0 +1,17 @@
+@name spoiled food
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval( 10 )
+
+findByClass( "spawned_food" )
+foreach( N, Food:entity=findToArray() )
+{
+    EntID = Food:id()
+    Model = Food:model()
+    holoCreate( EntID, Food:pos(), vec( 1.1, 1.1, 1.1 ), Food:angles(), vec( 0, 255, 0 ), Model )
+    holoMaterial(EntID, "models/flesh" )
+    holoAlpha( EntID, 255 )
+    holoParent( EntID, Food )
+}

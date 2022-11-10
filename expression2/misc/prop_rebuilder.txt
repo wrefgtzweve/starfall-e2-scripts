@@ -1,0 +1,78 @@
+@name prop rebuilder
+@persist [Pent,Pmod,Ppos,Pmat,Pang,Pcol,Palp]:array Scan:number Ptot:number Broken:number Chunk:number LoopPos:number
+
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+
+interval(1000)
+
+if(first())
+{
+    LoopPos=0
+    Chunk=50
+    Scan=0
+    Broken=0
+    propSpawnUndo(1)
+    findIncludePlayerProps(owner())
+    findByClass("prop_physics")
+    findSortByDistance(entity():pos())
+    Pent = findToArray()
+    Ptot = Pent:count()
+    print(Ptot+" Props scanned, processing now")
+    timer("chunk",1)
+}
+
+if(clk("chunk"))
+{
+    print(_HUD_PRINTCENTER,"Scanning: "+floor((LoopPos/Ptot)*100)+"%")
+    for(I=LoopPos,Chunk)
+    {
+        Ppos[I,vector] = Pent[I,entity]:pos()
+        Pang[I,angle] = Pent[I,entity]:angles()
+        Pmod[I,string] = Pent[I,entity]:model()
+        Pmat[I,string] = Pent[I,entity]:getMaterial()
+        Pcol[I,vector] = Pent[I,entity]:getColor()
+        Palp[I,number] = Pent[I,entity]:getAlpha()
+        
+        if(I==Chunk)
+        {
+            LoopPos+=50
+            Chunk+=50
+            timer("chunk",500)
+            break
+        }
+        if(I == Ptot)
+        {
+            print(_HUD_PRINTCENTER,"Scanning: "+100+"%")
+            stoptimer("chunk")
+            LoopPos=0
+            Chunk=50
+            Scan=1
+            print("Processing done, the scanned props are now protected.")
+            break
+        }
+    }
+}
+
+if(Scan==1)
+{
+    foreach(N,Prop:entity=Pent)
+    {
+        if(!Prop)
+        {
+            print(_HUD_PRINTCENTER,"Broken prop detected, initiating replacement.")
+            X = propSpawn(Pmod[N,string],Ppos[N,vector],1)
+            X:setAng(Pang[N,angle])
+            X:setMaterial(Pmat[N,string])
+            X:setColor(Pcol[N,vector],Palp[N,number])
+            Pent[N,entity] = X
+            Broken++
+        }
+        if(Broken==4)
+        {
+            Broken=0
+            break
+        }
+    }
+}

@@ -1,0 +1,13 @@
+@name POLISH CAR
+#----------------#
+# Made by Redox  # https://github.com/wrefgtzweve/starfall-e2-scripts
+#----------------#
+# Needs a visclip on the car
+
+X = entity():isWeldedTo()
+
+holoCreate(1,X:pos(),vec(0.999,0.999,0.999),X:angles())
+holoModel(1,X:model())
+holoParent(1,X)
+#holoMaterial(1,"models/debug/debugwhite")
+holoColor(1,vec(0,0,255))
