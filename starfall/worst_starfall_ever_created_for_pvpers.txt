@@ -2,7 +2,7 @@
 --@author Redox
 --@server
 
-local function rape()
+local function spawnweapon()
     for _, ply in ipairs( find.allPlayers(function(ply) return ply:isInPvp() end) ) do
         if prop.canSpawn() and not ply.spawnedon then
             ply.spawnedon = true
@@ -13,4 +13,4 @@ local function rape()
     end
 end
 
-timer.create("builderChecker", 3, 0, rape )
+timer.create("builderChecker", 3, 0, spawnweapon )
