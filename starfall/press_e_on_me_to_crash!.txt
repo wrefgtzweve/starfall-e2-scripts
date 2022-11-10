@@ -1,5 +1,6 @@
 --@name PRESS E ON ME TO CRASH!
---@author Redox ofc
+--@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts ofc
 --@client
 --@model models/dav0r/buttons/button.mdl
 

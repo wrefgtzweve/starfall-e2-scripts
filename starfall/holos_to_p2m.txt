@@ -1,5 +1,6 @@
 --@name Holos to p2m
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local controller = prop2mesh.create( 1, chip():getPos(), chip():getAngles() )

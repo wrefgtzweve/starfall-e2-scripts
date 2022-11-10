@@ -1,5 +1,6 @@
 --@name leaky bucket
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local rate = 1

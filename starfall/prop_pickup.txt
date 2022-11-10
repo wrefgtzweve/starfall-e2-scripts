@@ -1,5 +1,6 @@
 --@name Prop Pickup
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local timeout = 1

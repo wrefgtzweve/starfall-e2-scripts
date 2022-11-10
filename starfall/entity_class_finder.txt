@@ -1,5 +1,6 @@
 --@name entity class finder
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 
 if player() == owner() then

@@ -1,5 +1,6 @@
 --@name Screen render test
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 local Props = find.byClass( "prop_physics", function(a)

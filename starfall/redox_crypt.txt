@@ -1,5 +1,6 @@
 --@name Redox Crypt V1
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 
 

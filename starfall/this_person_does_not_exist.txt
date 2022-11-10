@@ -1,5 +1,6 @@
 --@name This person does not exist
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 --[[
 https://www.thiswaifudoesnotexist.net/example-9004.jpg

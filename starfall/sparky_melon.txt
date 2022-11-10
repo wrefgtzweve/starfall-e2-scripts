@@ -1,5 +1,6 @@
 --@name sparky melon
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 timer.create( "my balls", 0.25, 300, function()

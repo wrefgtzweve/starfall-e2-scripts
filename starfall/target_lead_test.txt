@@ -1,5 +1,6 @@
 --@name Target lead test
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 if player() ~= owner() then return end

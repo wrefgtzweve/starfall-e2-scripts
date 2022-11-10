@@ -1,5 +1,6 @@
 --@name hide builders
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 if player() ~= owner() then return end

@@ -1,5 +1,6 @@
 --@name missile particles
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client   
 
 local materials = {

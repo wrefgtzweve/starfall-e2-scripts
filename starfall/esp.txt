@@ -1,5 +1,6 @@
 --@name ESP
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 if CLIENT then

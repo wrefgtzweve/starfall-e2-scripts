@@ -1,5 +1,6 @@
 --@name Multiplying box
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local model = "models/props_junk/wood_crate001a.mdl"

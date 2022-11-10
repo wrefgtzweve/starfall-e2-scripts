@@ -1,5 +1,6 @@
 --@name zippy
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 if owner() == player() then return end

@@ -1,5 +1,6 @@
 --@name world ent finder
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 local whitelist = {

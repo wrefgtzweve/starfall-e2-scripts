@@ -1,5 +1,6 @@
 --@name barrel fix
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local model = "models/props_c17/oildrum001_explosive.mdl"

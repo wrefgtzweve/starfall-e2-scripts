@@ -1,5 +1,6 @@
 --@name Translator
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 --POST https://translation.googleapis.com/language/translate/v2

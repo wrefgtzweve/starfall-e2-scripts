@@ -1,5 +1,6 @@
 --@name Prop rebuilder V2
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local Props = {}

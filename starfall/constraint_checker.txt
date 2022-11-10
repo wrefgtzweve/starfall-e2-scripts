@@ -1,5 +1,6 @@
 --@name Constraint checker
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 --@model models/props_lab/harddrive02.mdl
 

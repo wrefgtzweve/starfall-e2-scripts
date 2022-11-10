@@ -1,5 +1,6 @@
 --@name Anti missile turret
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local curtime = timer.curtime

@@ -1,5 +1,6 @@
 --@name worst starfall ever created for pvpers
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local function spawnweapon()

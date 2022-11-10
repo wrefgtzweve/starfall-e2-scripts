@@ -1,5 +1,6 @@
 --@name MT Tracer
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 --@include cl_mttrace.txt
 --@include sv_mttrace.txt

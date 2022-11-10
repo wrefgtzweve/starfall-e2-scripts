@@ -1,5 +1,6 @@
 --@name random holos lol
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 --@model models/hunter/blocks/cube025x025x025.mdl
 

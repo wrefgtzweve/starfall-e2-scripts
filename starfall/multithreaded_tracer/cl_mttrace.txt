@@ -1,5 +1,6 @@
 --@name trace test
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 --@model models/maxofs2d/camera.mdl
 

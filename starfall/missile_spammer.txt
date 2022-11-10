@@ -1,5 +1,6 @@
 --@name Missile spammer
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local Z = 0

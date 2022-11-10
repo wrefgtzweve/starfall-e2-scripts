@@ -1,5 +1,6 @@
 --@name community tracer
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 --@model models/maxofs2d/camera.mdl
 --@include libs/shared_computation.txt

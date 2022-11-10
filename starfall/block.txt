@@ -1,5 +1,6 @@
 --@name Block
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local x = find.playersByName("hexrap",false,false)[1]

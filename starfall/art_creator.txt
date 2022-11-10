@@ -1,5 +1,6 @@
 --@name art creator
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local maxRange = 1500

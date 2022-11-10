@@ -1,5 +1,6 @@
 --@name E2 SF Lister
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 
 if SERVER then

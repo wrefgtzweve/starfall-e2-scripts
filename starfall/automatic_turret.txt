@@ -1,5 +1,6 @@
 --@name Automatic turret
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 wire.adjustInputs(

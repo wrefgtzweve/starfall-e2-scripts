@@ -1,5 +1,6 @@
 --@name npc test
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local npcs = find.byClass("npc*",function( a )

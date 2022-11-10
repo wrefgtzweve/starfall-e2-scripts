@@ -1,5 +1,6 @@
 --@name WAILA (What Am I Looking At)
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 if player() == owner() then
     enableHud( owner(), true )

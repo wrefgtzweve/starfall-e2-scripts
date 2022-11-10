@@ -1,5 +1,6 @@
 --@name spawn_sent
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 timer.create( "balls", 0.25, 0, function()

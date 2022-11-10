@@ -1,5 +1,6 @@
 --@name SERBIAN WARCRIMAL RADIO
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@model models/props_lab/reciever01d.mdl
 --@shared
 

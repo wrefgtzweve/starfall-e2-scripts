@@ -1,5 +1,6 @@
 --@name Rocket launcher
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 --@model models/props_phx/amraam.mdl
 -- Change model ^^

@@ -1,5 +1,6 @@
 --@name CHINESE STATE BROADCASTING STATION
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 local snd

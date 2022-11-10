@@ -1,5 +1,6 @@
 --@name Rope Counter
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 local players = find.allPlayers()
 local ropeTable = find.byClass("keyframe_rope")

@@ -1,5 +1,6 @@
 --@name junk creator
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local owner = owner()

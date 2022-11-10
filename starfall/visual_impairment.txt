@@ -1,5 +1,6 @@
 --@name Car intercourse
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local target = find.playersByName( "merco")[1]

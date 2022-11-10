@@ -1,5 +1,6 @@
 --@name Grammer fixer
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 hook.add( "PlayerSay", "grammarcheck", function( ply, text )

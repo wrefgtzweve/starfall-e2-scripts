@@ -1,5 +1,6 @@
 --@name Weight setter
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 local weight = 1000

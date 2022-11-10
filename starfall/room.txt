@@ -1,5 +1,6 @@
 --@name Room
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@client
 
 local walls = render.createMaterial("props/acousticceiling002a")

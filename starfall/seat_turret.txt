@@ -1,5 +1,6 @@
 --@name Seat turret
 --@author Redox
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@shared
 
 if SERVER then
