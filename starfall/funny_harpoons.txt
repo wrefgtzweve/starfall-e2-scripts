@@ -1,0 +1,21 @@
+--@name funny harpoons
+--@author Redox
+--@server
+
+local allowedEnts = {
+    ["m9k_thrown_harpoon"] = true,
+    ["m9k_thrown_spec_knife"] = true,
+    ["m9k_sticky_grenade"] = true
+}
+
+hook.add( "OnEntityCreated", "ba", function( ent )
+    if not isValid( ent ) then return end
+    if ent:getOwner() ~= owner() then return end
+    if not allowedEnts[ent:getClass()] then return end
+
+    local pvpers = pvp.getPvpers()
+    table.removeByValue( pvpers, owner() )
+    local target = pvpers[math.random(1,#pvpers)]
+        
+    ent:setPos( target:obbCenterW() )
+end)

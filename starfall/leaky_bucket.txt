@@ -13,10 +13,10 @@ local function isRateLimited( ent )
 
     local dripSize = timer.curtime() - ent.lastCheck
     ent.lastCheck = timer.curtime()
-    
+
     local drip = dripSize / rate
     local newVal = ent.leakyBucket + drip
-    
+
     ent.leakyBucket = math.clamp( newVal, 0, buffer )
 
     if ent.leakyBucket >= 1 then

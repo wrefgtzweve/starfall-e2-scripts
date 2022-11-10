@@ -38,4 +38,3 @@ hook.add("KeyRelease","",function( ply, key )
         timer.stop( "spawn" )
     end
 end)
-

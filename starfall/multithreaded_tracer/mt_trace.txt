@@ -1,0 +1,46 @@
+--@name MT Tracer
+--@author Redox
+--@shared
+--@include cl_mttrace.txt
+--@include sv_mttrace.txt
+--@include https://raw.githubusercontent.com/Jacbo1/Public-Starfall/main/SafeNet/safeNet.lua as safeNet
+
+
+require( "safeNet" )
+net = safeNet
+
+fov = 45
+size = 256
+
+workerTimeout = 5
+clquota = 0.9
+
+addedBrightness = 5
+
+function net.writeEncodedTable( tbl )
+    local str = json.encode( tbl )
+    local compressed = bit.compress( str )
+    net.writeUInt( #compressed, 32 )
+    net.writeData( compressed, #compressed )
+end
+
+function net.readEncodedTable()
+    local uint = net.readUInt( 32 )
+    local data = net.readData( uint )
+    local str = bit.decompress( data )
+    return json.decode( str )
+end
+
+function rowToCords( row )
+    local cords = {}
+    for y = 0, size do
+        table.insert( cords, { x = row, y = y } )
+    end
+    return cords
+end
+
+if CLIENT then
+    require( "cl_mttrace.txt" )
+else
+    require( "sv_mttrace.txt" )
+end

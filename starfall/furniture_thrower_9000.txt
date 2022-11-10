@@ -29,7 +29,7 @@
                 local Prop = prop.create(owner():getPos()+Vector(0,0,140), owner():getEyeAngles(),Furniture[math.random(1,table.count(Furniture))],false)
                 Prop:setMass(10)
                 Prop:applyForceCenter(owner():getAimVector() * 750000)
-                timer.simple(10,function()
+                timer.simple(60,function()
                     if isValid(Prop) then
                         Prop:breakEnt()
                     end

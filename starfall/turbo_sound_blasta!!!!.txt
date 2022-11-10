@@ -7,7 +7,7 @@ local hoon = "xd"
 
 timer.create( "X", 0.1, 20, function()
     local snd
-    bass.loadURL( "https://cdn.discordapp.com/attachments/643984770950365184/879189049175310386/yt1s.com_-_J_Jonah_Jameson_laughing_except_its_an_earrape.mp3","3d noblock noplay", function( x )
+    bass.loadURL( "https://cdn.discordapp.com/attachments/764638856292859924/940117491869438012/Buttercup_mp3.mp3","3d noblock noplay", function( x )
         snd = x
         snd:setPos( chip():getPos() )
         snd:setVolume( 10 )

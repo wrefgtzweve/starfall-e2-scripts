@@ -1,0 +1,14 @@
+--@name troll materilizer
+--@author Redox
+--@server
+
+local tempProps = find.all( function(a)
+    return a:getOwner() == owner()
+end)
+--models/charple/charple1_sheet
+--models/cfc/parachute/parachute_troll
+for _, ent in ipairs( tempProps ) do
+    if ent:getClass() == "prop_physics" then continue end
+    ent:setMaterial( "models/cfc/parachute/parachute_troll" )
+    ent:setColor( Color() )
+end

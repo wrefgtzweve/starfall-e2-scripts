@@ -1,0 +1,92 @@
+--@name Shared computation lib
+--@author Redox
+--@shared
+
+scl = {}
+
+if CLIENT then
+local workfunc
+local resultFunc
+
+function scl.hasFreeWorkers()
+    for _, ply in pairs( find.allPlayers() ) do
+        if ply ~= owner() and not ply.rclIsWorking then
+            return true
+        end
+    end
+    return false
+end
+
+function scl.sendWork( data )
+    local worker
+    for _, ply in pairs( find.allPlayers() ) do
+        if not ply.rclIsWorking then
+            worker = ply
+            break
+        end
+    end
+
+    net.start( "rclReceiveWork" )
+    net.writeEntity( worker )
+    net.writeString( json.encode( data ) )
+    net.send()
+
+    worker.rclIsWorking = true
+end
+
+function scl.registerWorkFunc( func )
+    workfunc = func
+end
+
+function scl.registerResultFunc( func )
+    resultFunc = func
+end
+
+function scl.sendResult( result )
+    net.start( "rclReceiveResult" )
+    net.writeString( json.encode( result ) )
+    net.send()
+end
+
+net.receive( "rclSendWork", function()
+    local work = net.readString()
+    workfunc( json.decode( work ) )
+end )
+
+net.receive( "rclBroadcastResult", function()
+    local result = net.readString()
+    local ply = net.readEntity()
+    resultFunc( json.decode( result ) )
+    ply.rclIsWorking = nil
+end )
+
+end
+
+
+
+
+
+
+
+
+if SERVER then
+
+net.receive( "rclReceiveWork", function()
+    local ply = net.readEntity()
+    local chunk = net.readString()
+    
+    net.start( "rclSendWork" )
+    net.writeTable( chunk )
+    net.send( ply )
+end )
+
+net.receive( "rclReceiveResult", function( _, ply )
+    local chunk = net.readString()
+
+    net.start( "rclBroadcastResult" )
+    net.writeTable( chunk )
+    net.writeEntity( ply )
+    net.send( find.allPlayers() )
+end )
+
+end

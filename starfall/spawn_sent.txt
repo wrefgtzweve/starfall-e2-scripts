@@ -3,5 +3,6 @@
 --@server
 
 timer.create( "balls", 0.25, 0, function()
-    local sent = prop.createSent(chip():getPos(), Angle(0,math.random(0,360),0), "item_suit", true )
+    local sent = prop.createSent(chip():getPos()+Vector(0,0,200), Angle(0,math.random(0,360),0), "ent_jack_seamine", false )
+    sent:use( 1 )
 end)

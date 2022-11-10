@@ -1,7 +1,7 @@
 --@name Image view made by Redox
 --@author Redox
 
-local nsfw = true
+local nsfw = false
 
 if CLIENT then
     local uploader = owner()

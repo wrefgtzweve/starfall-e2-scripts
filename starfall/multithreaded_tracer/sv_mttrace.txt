@@ -1,0 +1,64 @@
+local chip = chip()
+local size = size
+local workerTimeout = workerTimeout
+
+local rowsToRender = {}
+local completedRows = {}
+
+local function setUpWorker( ply )
+    if #rowsToRender == 0 then return end
+
+    local row = table.remove( rowsToRender, 1 )
+
+    ply.isWorking = true
+    net.start( "sendWork" )
+    net.writeInt( row, 14 )
+    net.send( ply )
+
+    timer.create( "checkupTimer" .. row, workerTimeout, 1, function()
+        if completedRows[row] then return end
+        print( "failed", row, ply )
+        table.insert( rowsToRender, row )
+    end )
+end
+
+local function findWorkers()
+    for _, ply in ipairs( find.allPlayers() ) do
+        if not ply.isWorking then --and chip:testPVS( ply:getPos() ) then
+            return setUpWorker( ply )
+        end
+    end
+end
+
+local function generatePoints()
+    for x = 0, size do
+        table.insert( rowsToRender, x )
+    end
+end
+
+local function start()
+    generatePoints()
+    timer.create( "findWorkerLoop", 0, 0, findWorkers )
+end
+
+net.receive( "receiveResults", function( _, ply )
+    ply.isWorking = false
+    local row = net.readInt( 14 )
+    local results = net.readEncodedTable()
+
+    completedRows[row] = true
+
+    net.start( "sendResults" )
+    net.writeInt( row, 14 )
+    net.writeEncodedTable( results )
+    net.send()
+end )
+
+-- timer.create( "sendResults", 1, 0, function()
+--     if not next( receivedResults ) then return end
+--     net.start( "sendResults" )
+--     net.writeTable( receivedResults )
+--     net.send()
+-- end )
+
+start()

@@ -1,0 +1,28 @@
+--@name roper
+--@author Redox
+--@client
+
+local owner = owner()
+if player() ~= owner then return end
+local down = false
+
+hook.add( "think", "spam", function()
+    if not owner:keyDown( 32 ) then return end
+    if down then
+        concmd( "+attack2" )
+    else
+        concmd( "-attack2" )
+    end
+    down = not down
+end)
+
+hook.add("KeyPress","spam",function( ply, key )
+    if ply ~= owner or key ~= 32 then return end
+    concmd( "+left" )
+end)
+
+hook.add("KeyRelease","spam",function( ply, key )
+    if ply ~= owner or key ~= 32 then return end
+    concmd( "-attack2" )
+    concmd( "-left" )
+end)

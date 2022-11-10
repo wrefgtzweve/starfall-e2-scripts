@@ -1,0 +1,18 @@
+--@name Bullet blocker
+--@author Redox
+--@server
+
+hook.add("EntityFireBullets","Trol",function( ply )
+    if not prop.canSpawn() then return end
+    --if ply ~= owner() then return end
+    --if not owner():keyDown(32) then return end
+    local  pos = ply:getShootPos() + ( ply:getEyeAngles():getForward() * 60)
+    pcall(function()
+        local Prop = prop.create( pos, ply:getEyeAngles() + Angle(90,0,0), "models/hunter/plates/plate025x025.mdl", true )
+        Prop:setMaterial("models/debug/debugwhite")
+        timer.simple(0.5,function()
+            if not isValid(Prop) then return end
+            Prop:breakEnt()
+        end)
+    end)
+end)

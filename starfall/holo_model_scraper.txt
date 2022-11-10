@@ -1,0 +1,56 @@
+--@name Holo model scraper
+--@author Redox
+--@client
+
+if player() ~= owner() then return end
+
+local models = {}
+local foldersToCheck = { "models" }
+local holo = holograms.create( chip():getPos(), Angle(), "models/hunter/blocks/cube025x025x025.mdl" )
+
+local quotaMax = quotaMax()
+
+local function checkFolder( path )
+    local files, folders = file.findInGame( path .. "/*" )
+
+    for _, fil in ipairs( files ) do
+        if quotaAverage() > quotaMax * 0.9 then return end
+        if string.sub( fil, -4 ) == ".mdl" then
+            table.insert( models, path .. "/" .. fil )
+        end
+    end
+
+    for _, folder in ipairs( folders ) do
+        table.insert( foldersToCheck, path .. "/" .. folder )
+    end
+    table.removeByValue( foldersToCheck, path )
+end
+
+local function spawnModels()
+    if #models == 0 then
+        timer.remove( "spawnTimer" )
+        return
+    end
+    --concmd( "gm_spawn " .. models[1] )
+    if quotaAverage() > quotaMax * 0.2 then return end
+    holo:setModel( models[1] )
+    table.remove( models , 1 )
+    print( models[1], #models )
+end
+
+local function runCheck()
+    local folder = foldersToCheck[1]
+    
+    if not folder or #models > 5000 then
+        timer.remove( "checkTimer" )
+        print( "Done, found: " .. #models .. " models." )
+        print( "Starting model spawner" )
+        table.random( models )
+        timer.create( "spawnTimer", 0, 0, spawnModels )
+        return
+    end
+    
+    checkFolder( folder )
+end
+
+timer.create( "checkTimer", 0, 0, runCheck )

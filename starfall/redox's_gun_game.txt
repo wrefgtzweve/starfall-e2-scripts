@@ -21,9 +21,12 @@
 -- V Edit this table below to change the weapon set V
 
 --local weapons = { "weapon_pistol", "weapon_357", "weapon_ar2", "weapon_smg1", "weapon_crowbar" }
-local weapons = {"m9k_rpg7","m9k_minigun","m9k_m60","m9k_m249lmg","m9k_fg42","m9k_ak47","m9k_ak74","m9k_scar","m9k_m3","m9k_ithacam37","m9k_usas","m9k_mp5","m9k_ump45","m9k_mp40","m9k_colt1911","m9k_usp","m9k_luger","m9k_knife"}
---local weapons = {"weapon_357",}
---local weapons = {}
+
+-- M9k
+--local weapons = {"m9k_rpg7","m9k_minigun","m9k_m60","m9k_m249lmg","m9k_fg42","m9k_ak47","m9k_ak74","m9k_scar","m9k_m3","m9k_ithacam37","m9k_usas","m9k_mp5","m9k_ump45","m9k_mp40","m9k_colt1911","m9k_usp","m9k_luger","m9k_knife"}
+-- CSS
+local weapons = {"weapon_mp5navy","weapon_mac10","weapon_p90","weapon_tmp","weapon_m4a1","weapon_ak47","weapon_famas","weapon_galil","weapon_aug","weapon_sg552","weapon_awp","weapon_scout","weapon_sg550","weapon_g3sg1","weapon_m3","weapon_xm1014","weapon_fiveseven","weapon_deagle","weapon_elite","weapon_knife"}
+
 --local weapons = {}
 
 -- Modify code below at own risk.
@@ -124,6 +127,7 @@ local function setPlayerWeapons( ply )
 end
 
 local function giveDefaultWeapons( ply )
+    if not isValid( ply ) then return end
     if not ply:isAlive() then return end
     ply:stripWeapons()
     for _, wep in ipairs( defaultLoadout ) do

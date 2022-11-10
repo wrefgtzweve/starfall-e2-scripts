@@ -1,0 +1,38 @@
+--@name world ent finder
+--@author Redox
+--@client
+
+local whitelist = {
+    prop_physics = true
+}
+local world = game.getWorld()
+local temp = find.all()
+local color = Color( 255, 0, 0 )
+local ents = {}
+
+for _, ent in ipairs( temp ) do
+    if not ent:getOwner() and whitelist[ent:getClass()] then
+        table.insert( ents, ent )
+    end
+end
+
+if player() == owner() then
+    enableHud( owner(), true )
+end
+
+local function renderEnt( ent )
+    if not isValid( ent ) then return end
+    local screenTbl = ent:obbCenterW():toScreen()
+    local x, y= screenTbl.x, screenTbl.y
+    render.setColor( color )
+    render.drawText( x, y, ent:getClass(), 1 )
+end
+
+hook.add( "drawhud", "draw", function()
+    if quotaAverage() > quotaMax()*0.90 then 
+        return 
+    end
+    for _, ent in ipairs( ents ) do
+        renderEnt( ent )
+    end
+end )

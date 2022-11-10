@@ -33,11 +33,13 @@ local function createEnt()
     if count > 600 then return end
     
     count = count + 1
-    local temp = prop.create( Vector() ,Angle() , model )
-    temp:setUnbreakable( true )
-    temp:enableMotion( false )
-    temp.multiplyEnt = true
-    table.insert( entities, temp )
+        pcall( function()
+        local temp = prop.create( Vector() ,Angle() , model )
+        temp:setUnbreakable( true )
+        temp:enableMotion( false )
+        temp.multiplyEnt = true
+        table.insert( entities, temp )
+    end )
 end
 
 timer.create( "createBoxes", 0.25, 0, createEnt )

@@ -1,0 +1,37 @@
+--@name Gib rain
+--@author Redox
+--@server
+--prop.setPropClean(false)
+
+local height = 100
+local spread = 10
+local model = {
+    "models/Gibs/HGIBS.mdl",
+    "models/Gibs/HGIBS_spine.mdl",
+    "models/Gibs/HGIBS_scapula.mdl",
+    "models/Gibs/HGIBS_rib.mdl",
+    "models/props_c17/doll01.mdl"
+}
+
+
+local function spawner()
+    if not prop.canSpawn() then return end
+    local ent
+    pcall(function()
+        ent = prop.create( chip():getPos() + Vector(math.random(-spread,spread),math.random(-spread,spread),height ) ,Angle(math.random(1,360),math.random(1,360),math.random(1,360)) , model[math.random(1,table.count(model))], false )
+        ent:setCollisionGroup( 3 )
+        timer.simple(math.random(9,12),function()
+            if not isValid( ent ) then return end
+            ent:enableMotion( false )
+        end)
+        
+        local eff = effect.create()
+        ent:addCollisionListener( function( data )
+            if not effect.canCreate() then return end
+            eff:setOrigin( ent:getPos() )
+            eff:play( "BloodImpact" )
+        end)
+    end)
+end
+
+timer.create( "tick", 0.25, 0, spawner)

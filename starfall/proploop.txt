@@ -7,5 +7,5 @@ local tempProps = find.all( function(a)
 end)
 
 for _, ent in ipairs( tempProps ) do
-    ent:enableMotion( true )
+    ent:setColor( Color( math.random( 1,255 ), math.random( 1,255 ), math.random( 1,255 ) ) )
 end

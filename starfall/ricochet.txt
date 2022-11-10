@@ -1,0 +1,37 @@
+--@name Ricochet
+--@author Redox
+--@server
+
+local function spawn()
+    if not prop.canSpawn() or not owner():isAlive() then return end
+
+    local disk = prop.create( owner():getEyePos() + owner():getForward() * 50, owner():getEyeAngles(), "models/props_junk/sawblade001a.mdl", false )
+    disk:setMass( 200 )
+    disk:applyForceCenter( owner():getAimVector() * 500000 )
+    --disk:emitSound( "ambient/machines/usetoilet_flush1.wav", 100, math.random( 50 ,150 ) )
+    disk:setCollisionGroup( 9 )
+    disk:enableGravity( false )
+    disk:setMaterial( "models/alyx/emptool_glow" )
+    
+    local eff = effect.create()
+    disk:addCollisionListener( function( data )
+        if not effect.canCreate() then return end
+        if not isValid( disk ) then return end
+        if not isValid( data.HitEntity ) then return end
+        if not data.HitEntity:isPlayer() then return end
+        
+        eff:setOrigin( disk:getPos() )
+        eff:play( "BloodImpact" )
+    end )
+
+    timer.simple( 5, function()
+        if isValid( disk ) then
+            disk:breakEnt()
+        end
+    end )
+end
+
+hook.add( "KeyPress", "spawnDisk", function( ply, key )
+    if ply ~= owner() or key ~= 1 then return end
+    spawn()
+end )

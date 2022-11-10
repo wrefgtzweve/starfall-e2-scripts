@@ -1,0 +1,31 @@
+--@name Grammer fixer
+--@author Redox
+--@server
+
+hook.add( "PlayerSay", "grammarcheck", function( ply, text )
+    if ply ~= owner() then return end
+    if string.sub( text, 1, 1 ) ~= "$" then return end
+    
+    text = string.sub( text, 2 )
+    
+    http.post(
+        "https://api.textgears.com/correct",
+        {
+            ai = "true",
+            key = "m8bX5B5bcRXOQefp",
+            language = "en-US",
+            poweredBy = "textgears-api",
+            text = text
+        },
+        function( body )
+            local tbl = json.decode( body )
+            timer.simple( 0.5, function()
+                concmd( "say " .. tbl.response.corrected )
+            end)
+        end,
+        function( body )
+            print( body )
+        end
+    )
+    return ""
+end )

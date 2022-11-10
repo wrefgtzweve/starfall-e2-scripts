@@ -1,0 +1,125 @@
+--@name trace test
+--@author Redox
+--@client
+--@model models/maxofs2d/camera.mdl
+
+if player() == owner() then
+    enableHud( owner(), true )
+end
+
+local fov = fov
+local size = size
+local clquota = clquota
+
+local quotaAverage = quotaAverage
+local quotaMax = quotaMax
+local addedBrightness = addedBrightness
+local trace_trace = trace.trace
+local trace_aimVector = trace.aimVector
+local render_setRenderTargetTexture = render.setRenderTargetTexture
+local render_drawTexturedRect = render.drawTexturedRect
+local render_drawRectFast = render.drawRectFast
+local render_setColor = render.setColor
+local render_selectRenderTarget = render.selectRenderTarget
+local render_setFilterMag = render.setFilterMag
+local render_traceSurfaceColor = render.traceSurfaceColor
+local isValid = isValid
+
+local workToDo = {}
+local doneWork = {}
+local pointsToDraw = {}
+local chip = chip()
+local chipPos = chip:getPos()
+local chipAngles = chip:getAngles()
+local sunInfo = game.getSunInfo() or Vector( 0.188144, 0.282216, 0.940720 )
+local screenMult = 1024 / size
+local rtmat = "renderID"
+local skyboxColor = Color( 153, 204, 255, 255 )
+
+local renderRow = 0
+render.createRenderTarget( rtmat )
+
+local traceIgnore = find.allPlayers()
+table.insert( traceIgnore, chip )
+
+local function tracePoint( point )
+    local x, y = point.x, point.y
+    local traceEndPos = chipPos + trace_aimVector( chipAngles, fov, x, y, size, size ) * 10000
+
+    local result = trace_trace( chipPos, traceEndPos, traceIgnore )
+    local colorTrace = render_traceSurfaceColor( chipPos, traceEndPos )
+
+    local color
+    if result.HitSky then
+        color = skyboxColor
+    else
+        local entColor = isValid( result.Entity ) and result.Entity:getColor() or colorTrace
+        color = ( result.HitNormal:dot( sunInfo ) + 1 ) / 2 * entColor
+    end
+    color.a = 255
+    color = color * addedBrightness
+
+    table.insert( doneWork, color )
+end
+
+local function runTracer()
+    hook.add( "Think", "traceHook", function()
+        while quotaAverage() < quotaMax() * clquota do
+            local val = workToDo[1]
+            if not val then
+                hook.remove( "Think", "traceHook" )
+                net.start( "receiveResults" )
+                net.writeInt( renderRow, 14 )
+                net.writeEncodedTable( doneWork )
+                net.send()
+                doneWork = {}
+                break
+            end
+            tracePoint( val )
+            table.remove( workToDo, 1 )
+        end
+    end )
+end
+
+hook.add( "Render", "renderSquares", function()
+    render_setRenderTargetTexture( rtmat )
+    render_setFilterMag( 1 )
+    render_drawTexturedRect( 0, 0, 512, 512 )
+end )
+
+hook.add( "renderoffscreen", "refreshRT", function()
+    render_selectRenderTarget( rtmat )
+
+    for row, colors in pairs( pointsToDraw ) do
+        for y = 0, size do
+            local color = colors[y + 1]
+            render_setColor( color )
+            render_drawRectFast( row * screenMult, ( y - 1 ) * screenMult, screenMult, screenMult )
+        end
+    end
+    pointsToDraw = {}
+end )
+
+hook.add( "postdrawtranslucentrenderables", "drawFOV", function( _, sky )
+    if sky then return end
+    local pos = chip:getPos()
+    local ang = chip:getAngles()
+
+    render.draw3DLine( pos, pos + trace_aimVector( ang, fov, size, 0, size, size ) * 10000 )
+    render.draw3DLine( pos, pos + trace_aimVector( ang, fov, 0, size, size, size ) * 10000 )
+    render.draw3DLine( pos, pos + trace_aimVector( ang, fov, 0, 0, size, size ) * 10000 )
+    render.draw3DLine( pos, pos + trace_aimVector( ang, fov, size, size, size, size ) * 10000 )
+end )
+
+net.receive( "sendWork", function()
+    doneWork = {}
+    local row = net.readInt( 14 )
+    workToDo = rowToCords( row )
+    renderRow = row
+    runTracer()
+end )
+
+net.receive( "sendResults", function()
+    local row = net.readInt( 14 )
+    pointsToDraw[row] = net.readEncodedTable()
+end )

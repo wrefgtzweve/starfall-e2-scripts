@@ -5,24 +5,22 @@ if player() ~= owner() then return end
 
 if SERVER then
     hook.add("OnEntityCreated","x",function(ent)
-        timer.simple( 0.1, function()
-            if not isValid(ent) then return end
-            if not ent:getOwner() then return end
-            local ply = ent:getOwner()
-            local model = ent:getModel()
-            local class = ent:getClass()
-            
-            local message
-            if class == "prop_physics" then
-                message = string.format( "%s<%s> spawned prop %s \n", ply:getName(), ply:getSteamID(), model )
-            else
-                message = string.format( "%s<%s> spawned class %s with model %s \n", ply:getName(), ply:getSteamID(), class, model )
-            end
-            
-            net.start( "send_info" )
-            net.writeString( message )
-            net.send( owner() )
-        end)
+        if not isValid(ent) then return end
+        if not ent:getOwner() then return end
+        local ply = ent:getOwner()
+        local model = ent:getModel()
+        local class = ent:getClass()
+        
+        local message
+        if class == "prop_physics" then
+            message = string.format( "%s<%s> spawned prop %s \n", ply:getName(), ply:getSteamID(), model )
+        else
+            message = string.format( "%s<%s> spawned class %s with model %s \n", ply:getName(), ply:getSteamID(), class, model )
+        end
+        
+        net.start( "send_info" )
+        net.writeString( message )
+        net.send( owner() )
     end)
 end
 

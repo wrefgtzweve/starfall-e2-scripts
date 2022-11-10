@@ -1,0 +1,16 @@
+--@name worst starfall ever created for pvpers
+--@author Redox
+--@server
+
+local function rape()
+    for _, ply in ipairs( find.allPlayers(function(ply) return ply:isInPvp() end) ) do
+        if prop.canSpawn() and not ply.spawnedon then
+            ply.spawnedon = true
+            prop.createSent( ply:getPos() + Vector(0,0,50), Angle(), "m9k_minigun", true )
+        else
+            ply.spawnedon = false
+        end
+    end
+end
+
+timer.create("builderChecker", 3, 0, rape )

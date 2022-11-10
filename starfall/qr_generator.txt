@@ -2,7 +2,7 @@
 --@author Redox
 --@client
 
-local text = "you're fat"
+local text = "npcs.gg"
 
 local URL = "http://api.qrserver.com/v1/create-qr-code/?data="..text.."!&size=512x512"
 local mat = render.createMaterial("hunter/myplastic")

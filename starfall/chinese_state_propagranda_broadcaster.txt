@@ -4,12 +4,12 @@
 
 local snd
 
-bass.loadURL( "https://cdn.discordapp.com/attachments/822502262614130718/885995083239931924/Sergio_Valentino_-_Drive_Forever_-_.mp3","3d noblock noplay", function( x )
+bass.loadURL( "https://cdn.discordapp.com/attachments/695140254595940402/1035285545808568471/air-raid-siren-alarm-6168.mp3","3d noblock noplay", function( x )
     snd = x
     snd:setPos( chip():getPos() )
-    snd:setVolume( 4 )
-    snd:setLooping( true )
-    snd:setFade( 200, 1000 )
+    snd:setVolume( 10 )
+    snd:setLooping( false )
+    snd:setFade( 400, 400 )
     snd:play()
 
     hook.add( "Think", "x", function()

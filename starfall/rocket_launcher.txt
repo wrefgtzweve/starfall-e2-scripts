@@ -1,10 +1,10 @@
 --@name Rocket launcher
 --@author Redox
 --@server
---@model models/props_phx/ww2bomb.mdl
+--@model models/props_phx/amraam.mdl
 -- Change model ^^
-local cooldown = 0 -- In seconds
-local force = 10000 -- More force, faster bomb
+local cooldown = 0.1 -- In seconds
+local force = 100000 -- More force, faster bomb
 local bombMass = 1000
 local gravity = true
 

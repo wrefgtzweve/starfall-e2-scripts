@@ -1,6 +1,6 @@
 --@name ESP
 --@author Redox
---@shared
+--@client
 
 if CLIENT then
     local Players
