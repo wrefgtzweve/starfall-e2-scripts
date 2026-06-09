@@ -1,6 +1,7 @@
 --@name Funky props
 --@author Redox
 --@server
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 
 -- Settings
 local model = "models/props_c17/TrapPropeller_Blade.mdl"

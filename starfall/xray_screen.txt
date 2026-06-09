@@ -1,9 +1,9 @@
 --@name Xray screen
 --@author Redox
 --@client
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 
 local plyHolos = {}
-
 for _, ply in ipairs( find.allPlayers() ) do
     local holo = holograms.create( ply:getPos(), ply:getAngles(), "models/player/skeleton.mdl" )
     holo:setNoDraw(true)

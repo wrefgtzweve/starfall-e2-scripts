@@ -1,6 +1,7 @@
 --@name hitbox volume
 --@author Redox
 --@server
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 
 local function calculateVolume(max, min)
     local x_diff = max[1] - min[1]

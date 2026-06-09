@@ -1,6 +1,7 @@
 --@name Collision check cam
 --@author Redox
 --@client
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
     
 local canAng = true
 local speed = 10

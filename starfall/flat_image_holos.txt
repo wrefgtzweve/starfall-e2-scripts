@@ -1,6 +1,7 @@
 --@name Image placer
 --@author Redox
 --@shared
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 
 if CLIENT then
     local matCache = {}

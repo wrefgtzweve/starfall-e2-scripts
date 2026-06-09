@@ -1,6 +1,8 @@
 --@name Hitbox viewer
 --@author Redox
+--@owneronly
 --@client
+-- https://github.com/wrefgtzweve/starfall-e2-scripts
 
 if owner() == player() then enableHud( _, true ) end
 
