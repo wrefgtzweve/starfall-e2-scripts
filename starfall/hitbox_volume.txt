@@ -1,0 +1,38 @@
+--@name hitbox volume
+--@author Redox
+--@server
+
+local function calculateVolume(max, min)
+    local x_diff = max[1] - min[1]
+    local y_diff = max[2] - min[2]
+    local z_diff = max[3] - min[3]
+
+    local volume = x_diff * y_diff * z_diff
+    return volume
+end
+
+local function getHitboxVolume( ply )
+    local totalVolume = 0
+    local numHitBoxSets = ply:getHitBoxSetCount()
+
+    for hboxset = 0, numHitBoxSets - 1 do
+        local numHitBoxes = ply:getHitBoxCount( hboxset )
+        
+        for hitbox = 0, numHitBoxes - 1 do
+            local bone = ply:getHitBoxBone( hitbox, hboxset )
+            local pos, ang = ply:getBonePosition( bone )
+            local min, max = ply:getHitBoxBounds( hitbox,hboxset )
+            
+            totalVolume = totalVolume + calculateVolume( max, min )
+        end
+    end
+    
+    return totalVolume
+end
+
+for _, ply in ipairs( find.allPlayers() ) do
+    local vol = getHitboxVolume( ply )
+    if vol < 7200 then
+        print( ply, ply:getModel(), ply:isInPVP() and "in PVP" or "in PVE", getHitboxVolume( ply ) )
+    end
+end

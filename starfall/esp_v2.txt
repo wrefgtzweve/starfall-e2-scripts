@@ -1,0 +1,65 @@
+--@name ESP v2
+--@author Redox
+--@client
+--@owneronly
+
+local currentPlayer = player()
+local whiteColor = Color( 255, 255, 255 )
+local redColor = Color( 255, 0, 0 )
+local offset = Vector( 0, 0, 80 )
+
+enableHud( player(), true )
+
+local updateTime = 10
+local dormantPlayers = {}
+hook.add( "NotifyShouldTransmit", "ESP_v2", function( ent, shouldTransmit )
+    if not ent:isPlayer() then return end
+
+    if shouldTransmit then
+        local dormantTime = dormantPlayers[ent]
+        dormantPlayers[ent] = nil
+
+        if dormantTime then
+            local timeSinceDormant = math.floor( timer.curtime() - dormantTime )
+            if timeSinceDormant > updateTime then
+                updateTime = timeSinceDormant
+            end
+        end
+    else
+        dormantPlayers[ent] = timer.curtime()
+    end
+end )
+
+local scrhX, scrhW = render.getResolution()
+hook.add( "DrawHUD", "ESP_v2", function()
+    for _, ply in ipairs( find.allPlayers() ) do
+        if ply == currentPlayer then continue end
+
+        local plyToScreen = ( ply:getPos() + offset ):toScreen()
+        if plyToScreen.x > scrhX or plyToScreen.y > scrhW then
+            continue
+        end
+
+        local plyColor = ply.tColor
+        if not plyColor then
+            plyColor = team.getColor( ply:getTeam() )
+            ply.tColor = plyColor
+        end
+
+        render.setColor( plyColor )
+        render.drawSimpleText( plyToScreen.x, plyToScreen.y, ply:getName(), 1, 1, whiteColor, 1 )
+
+        local hOffset = 11
+        if not ply:isAlive() then
+            render.drawSimpleText( plyToScreen.x, plyToScreen.y + hOffset, "DEAD", 1, 1, redColor, 1 )
+            hOffset = hOffset + 11
+        end
+
+        local dormantTime = dormantPlayers[ply]
+        if dormantTime then
+            render.setColor( whiteColor )
+            render.drawSimpleText( plyToScreen.x, plyToScreen.y + hOffset, updateTime - math.round( timer.curtime() - dormantTime, 1 ) .. "s", 1, 1, whiteColor, 1 )
+            hOffset = hOffset + 11
+        end
+    end
+end )

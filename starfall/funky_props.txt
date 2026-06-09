@@ -1,6 +1,5 @@
 --@name Funky props
 --@author Redox
--- https://github.com/wrefgtzweve/starfall-e2-scripts
 --@server
 
 -- Settings
@@ -23,7 +22,7 @@ local function spawnProp()
     end )
 end
 
-timer.create( "spawnProps", 0.001, propCount, spawnProp )
+timer.create( "spawnProps", 0.25, propCount, spawnProp )
 
 local function forceVector( ent )
     return Angle( math_random( -force, force ), math_random( -force, force ), math_random( -force, force ) ) * ent:getMass()
@@ -44,4 +43,4 @@ local function applyFunkyness()
     end
 end
 
-timer.create( "funkyProps", 0.2, 0, applyFunkyness )
+timer.create( "funkyProps", 0.25, 0, applyFunkyness )

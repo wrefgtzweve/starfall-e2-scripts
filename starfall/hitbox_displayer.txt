@@ -1,0 +1,77 @@
+--@name Hitbox viewer
+--@author Redox
+--@client
+
+if owner() == player() then enableHud( _, true ) end
+
+local render_draw3DWireframeBox = render.draw3DWireframeBox
+
+local owner = owner()
+local hitboxCache = {}
+
+local function newCache( ply )
+    local hitboxes = {}
+    local numHitBoxSets = ply:getHitBoxSetCount()
+
+    for hboxset = 0, numHitBoxSets - 1 do
+        local numHitBoxes = ply:getHitBoxCount( hboxset )
+        
+        for hitbox = 0, numHitBoxes - 1 do
+            local bone = ply:getHitBoxBone( hitbox, hboxset )
+            local pos, ang = ply:getBonePosition( bone )
+            local min, max = ply:getHitBoxBounds( hitbox,hboxset )
+            table.insert( hitboxes, {
+                bone = bone,
+                min = min,
+                max = max
+            } )
+        end
+    end
+    
+    return hitboxes
+end
+
+local function getHitboxes( ply )
+    local mdl = ply:getModel()
+    if not hitboxCache[mdl] then
+        hitboxCache[mdl] = newCache( ply )
+    end
+
+    local hitboxes = {}
+    for _, hitbox in ipairs( hitboxCache[mdl] ) do
+        hitbox.pos, hitbox.ang = ply:getBonePosition( hitbox.bone )
+        table.insert( hitboxes, hitbox )
+    end
+
+    return hitboxes
+end
+
+local function drawHitbox( ply )
+    if ply == owner then return end
+    if ply:isDormant() then return end
+    
+    for _, hitbox in ipairs( getHitboxes( ply ) ) do
+        render_draw3DWireframeBox( hitbox.pos, hitbox.ang, hitbox.min, hitbox.max, false )
+    end
+end
+
+local hsvNum = 0
+
+hook.add( "predrawviewmodels", "test", function()
+    local color = Color( hsvNum, 1, 1 ):hsvToRGB()
+
+    render.setColor( color )
+    for _, ply in ipairs( find.allPlayers() ) do
+        if ply == owner then continue end
+        if not ply:isDormant() and ply:isAlive() then
+            drawHitbox( ply )
+        end
+    end
+    
+    local x = owner:getEyeTrace()
+    if isValid( x.Entity ) then
+        drawHitbox( x.Entity )
+    end
+    
+    hsvNum = hsvNum + 1
+end )

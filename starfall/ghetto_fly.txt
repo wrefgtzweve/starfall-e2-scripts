@@ -1,0 +1,16 @@
+--@name ghetto fly
+--@author Redox
+--@server
+
+local plate = prop.create( Vector(), Angle(), "models/hunter/tubes/circle2x2.mdl", true )
+plate:setMass(1)
+plate:setMaterial("models/props_canal/canal_bridge_railing_01a")
+
+hook.add( "think", "set", function()
+    if not owner():isFlashlightOn() then
+        plate:setPos( Vector() )
+        return
+    end
+
+    plate:getPhysicsObject():setPos( owner():getPos() - Vector( 0, 0, 1.7 ) )
+end )

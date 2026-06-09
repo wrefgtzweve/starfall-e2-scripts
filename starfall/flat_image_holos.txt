@@ -1,0 +1,170 @@
+--@name Image placer
+--@author Redox
+--@shared
+
+if CLIENT then
+    local matCache = {}
+    local holos = {}
+
+    local function createImage( url, pos, angles, scale )
+        if not hologram.canSpawn() then return end
+        scale = scale or 1
+        local holo = hologram.create( pos, angles, "models/hunter/plates/plate1x1.mdl" )
+        holo:setParent( chip() )
+        table.insert( holos, holo )
+
+        local cached = matCache[url]
+        if matCache[url] then
+            holo:setMaterial( "!" .. cached.mat:getName() )
+            holo:setScale( Vector( cached.wr * scale, cached.hr * scale, 0 ) )
+            return
+        end
+
+        local mat = material.create( "UnlitGeneric" )
+        mat:setInt("$flags", 2097152 + 65536 ) -- $translucent $decal
+        holo:setMaterial( "!" .. mat:getName() )
+
+        mat:setTextureURL( "$basetexture", url, function( _, _, w, h, reposition, cache )
+            local hr
+            local wr
+        
+            if w > h then
+                hr = w / h
+                wr = 1
+            else
+                wr = h / w
+                hr = 1
+            end
+        
+            local holoW = scale * wr
+            local holoH = scale * hr
+            holo:setScale( Vector( holoW, holoH, 0 ) )
+            matCache[url] = { wr = wr, hr = hr }
+        
+            reposition( 0, 0, 1024, 1024 )
+        end,
+        function( mat, url )
+            matCache[url].mat = mat
+        end  )
+    end
+    
+    net.receive( "create_img", function()
+        local url = net.readString()
+        local pos = net.readVector()
+        local ang = net.readAngle()
+        local scale = net.readInt( 10 )
+        createImage( url, pos, ang, scale )
+    end )
+    
+    net.receive( "clear", function()
+        for _, holo in ipairs( holos ) do
+            holo:remove()
+        end
+    end )
+    
+    net.receive( "clearlast", function()
+        holos[#holos]:remove()
+        table.remove( holos )
+    end )
+end
+
+if SERVER then
+    local created = {}
+    local leftToggle = false
+
+    local function createPosImg( url, pos, angle, scale )
+        table.insert( created, { url = url, pos = chip():worldToLocal( pos ), angle = angle, scale = scale } )
+
+        net.start( "create_img" )
+        net.writeString( url )
+        net.writeVector( pos )
+        net.writeAngle( angle )
+        net.writeInt( scale, 10 )
+        net.send()
+        
+        setUserdata( json.encode( created ) )
+    end
+
+    local function createAimposImg( url, ply, scale )
+        local tr = ply:getEyeTrace()
+        local pos = tr.HitPos + tr.HitNormal
+        local angle = tr.HitNormal:getAngle() + Angle( 90, 0, 0 )
+        scale = scale and tonumber( scale ) or 1
+        
+        createPosImg( url, pos, angle, scale )
+    end
+
+    hook.add( "PlayerSay", "ChatCommands", function( ply, txt )
+        if ply ~= owner() then return end
+        if not string.startWith( txt, "!" ) then return end
+
+        local args = string.explode( " ", txt )
+        local cmd = args[1]
+
+        if cmd == "!img" then
+            createAimposImg( args[2], ply, args[3] )
+            ply.last = args[2]
+            ply.lastSize = args[3]
+        end
+
+        if cmd == "!last" and ply.last then
+            createAimposImg( ply.last, ply, args[2] or ply.lastSize )
+
+            if args[2] then
+                ply.lastSize = args[2]
+            end
+        end
+
+        if cmd == "!clear" then
+            net.start( "clear" )
+            net.send()
+            
+            created = {}
+            setUserdata( json.encode( created ) )
+        end
+
+        if cmd == "!clearlast" then
+            net.start( "clearlast" )
+            net.send()
+
+            table.remove( created )
+            setUserdata( json.encode( created ) )
+        end
+        
+        if cmd == "!lefttoggle" then
+            leftToggle = not leftToggle
+        end
+        
+        if cmd == "!help" then
+            print( "Commands:" )
+            print( "!img url (scale) - Creates an image at the position you're looking at, optional scale" )
+            print( "!last (scale) - Creates the last image at your aimposition, optional scale" )
+            print( "!lefttoggle - Toggles creating images with left click" )
+            print( "!clear - Clears all the created images" )
+            print( "!clearlast - Clears the last created image" )
+        end
+
+        return ""
+    end )
+    
+    hook.add( "KeyPress", "leftToggle", function( ply, key )
+        if not leftToggle then return end
+        if ply ~= owner() then return end
+        if key ~= 1 then return end
+        
+        if not ply.last then return end
+        createAimposImg( ply.last, ply, ply.lastSize )
+    end )
+    
+    timer.simple( 0.5, function() -- Wait until the sf code has reached the client
+        local data = getUserdata()
+        if string.startWith( data, "[" ) then
+            print( "Dupe detected, loading old images..." )
+
+            local tbl = json.decode( data )
+            for _, holo in pairs( tbl ) do
+                createPosImg( holo.url, chip():localToWorld( holo.pos ), holo.angle, holo.scale )
+            end
+        end
+    end )
+end
